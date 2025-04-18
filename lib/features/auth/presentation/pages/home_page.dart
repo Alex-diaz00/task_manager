@@ -52,7 +52,6 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// Secciones placeholder
 class TasksSection extends StatelessWidget {
   const TasksSection({super.key});
 

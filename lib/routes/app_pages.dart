@@ -23,6 +23,5 @@ abstract class AppPages {
       page: () => HomePage(),
       binding: HomeBinding(),
 ),
-    // Agregar más rutas
   ];
 }

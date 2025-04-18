@@ -101,7 +101,6 @@ class SignupForm extends StatelessWidget {
   }
 }
 
-// Agrega en tu archivo constants.dart
 String? nameValidator(String? value) {
   if (value == null || value.isEmpty) return 'Name is required';
   if (value.length < 3) return 'Name must be at least 3 characters';

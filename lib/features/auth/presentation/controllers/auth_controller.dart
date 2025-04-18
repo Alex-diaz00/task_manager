@@ -37,7 +37,6 @@ class AuthController extends GetxController {
   result.fold(
     (failure) {
       if (failure is ServerFailure && failure.message.contains('Unauthorized')) {
-        // Token inválido o expirado
         secureStorage.delete(key: 'access_token');
         Get.offAllNamed('/login');
       }
@@ -50,7 +49,6 @@ class AuthController extends GetxController {
 
   void _handleAuthSuccess(UserEntity user) async {
   await secureStorage.write(key: 'access_token', value: user.token);
-  // Guardamos también el usuario completo
   await secureStorage.write(
     key: 'current_user',
     value: jsonEncode(user.toJson()),
