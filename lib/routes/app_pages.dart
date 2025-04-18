@@ -1,10 +1,9 @@
 import 'package:get/get.dart';
-import 'package:task_manager/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:task_manager/features/auth/presentation/pages/home_page.dart';
 import 'package:task_manager/features/auth/presentation/pages/login_page.dart';
 import 'package:task_manager/features/auth/presentation/pages/signup_page.dart';
 import 'package:task_manager/routes/bindings/auth_binding.dart';
-import 'package:task_manager/routes/bindings/home_binding';
+import 'package:task_manager/routes/bindings/home_binding.dart';
 
 abstract class AppPages {
   static final pages = [
