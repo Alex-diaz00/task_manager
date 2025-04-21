@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:task_manager/core/error/failures.dart';
 import 'package:task_manager/core/usecases/usecase.dart';
 import 'package:task_manager/features/auth/domain/entities/user_entity.dart';
 import 'package:task_manager/features/auth/domain/usecases/get_current_user_usecase.dart';
@@ -25,27 +24,42 @@ class AuthController extends GetxController {
   final agreeTerms = false.obs;
   final selectedTab = 0.obs;
   final currentUser = Rxn<UserEntity>();
+  final initialAuthCheckCompleted = false.obs;
 
   @override
   void onInit() {
     super.onInit();
     fetchCurrentUser();
   }
-  Future<void> fetchCurrentUser() async {
-  isLoading.value = true;
-  final result = await getCurrentUserUseCase(NoParams());
-  result.fold(
-    (failure) {
-      if (failure is ServerFailure && failure.message.contains('Unauthorized')) {
-        secureStorage.delete(key: 'access_token');
-        Get.offAllNamed('/login');
+  
+  Future<void> fetchCurrentUser({bool silent = true}) async {
+    try {
+      isLoading.value = true;
+      final token = await secureStorage.read(key: 'access_token');
+      
+      if (token == null || token.isEmpty) {
+        if (!silent) {
+          Get.snackbar('Error', 'No authentication token found');
+        }
+        currentUser.value = null;
+        return;
       }
-      Get.snackbar('Error', failure.message);
-    },
-    (user) => currentUser.value = user,
-  );
-  isLoading.value = false;
-}
+      
+      final result = await getCurrentUserUseCase(NoParams());
+      result.fold(
+        (failure) {
+          if (!silent) {
+            Get.snackbar('Error', failure.message);
+          }
+          currentUser.value = null;
+        },
+        (user) => currentUser.value = user,
+      );
+    } finally {
+      isLoading.value = false;
+      initialAuthCheckCompleted.value = true;
+    }
+  }
 
   void _handleAuthSuccess(UserEntity user) async {
   await secureStorage.write(key: 'access_token', value: user.token);

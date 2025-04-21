@@ -71,7 +71,11 @@ class LoginPage extends StatelessWidget {
                     children: [
                       const Text("Don't have an account?"),
                       TextButton(
-                        onPressed: () => Get.toNamed('/signup'),
+                        onPressed:   () {
+                          final controller = Get.find<AuthController>();
+                          controller.clearFields();
+                          Get.toNamed('/signup');
+                        },
                         child: const Text("Sign up"),
                       )
                     ],
