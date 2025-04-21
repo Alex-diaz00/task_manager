@@ -84,7 +84,7 @@ class SignupPage extends StatelessWidget {
                   ),
                   const SizedBox(height: AppConstants.defaultPadding * 2),
                   Obx(() => controller.isLoading.value
-                      ? const CircularProgressIndicator()
+                      ? Center(child: const CircularProgressIndicator())
                       : ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate() && 

@@ -53,7 +53,7 @@ class LoginPage extends StatelessWidget {
                     height: size.height > 700 ? size.height * 0.1 : AppConstants.defaultPadding,
                   ),
                   Obx(() => controller.isLoading.value
-                      ? const CircularProgressIndicator()
+                      ? Center(child: const CircularProgressIndicator())
                       : ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {

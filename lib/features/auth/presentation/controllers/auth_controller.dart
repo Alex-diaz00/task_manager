@@ -39,7 +39,9 @@ class AuthController extends GetxController {
       
       if (token == null || token.isEmpty) {
         if (!silent) {
-          Get.snackbar('Error', 'No authentication token found');
+          Get.snackbar('Error', 'No authentication token found',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 5));
         }
         currentUser.value = null;
         return;
@@ -49,7 +51,9 @@ class AuthController extends GetxController {
       result.fold(
         (failure) {
           if (!silent) {
-            Get.snackbar('Error', failure.message);
+            Get.snackbar('Error', failure.message,
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 5));
           }
           currentUser.value = null;
         },
@@ -92,7 +96,9 @@ class AuthController extends GetxController {
     ));
     
     result.fold(
-      (failure) => Get.snackbar('Error', failure.message),
+      (failure) => Get.snackbar('Error', failure.message,
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 5)),
       (user) => _handleAuthSuccess(user),
     );
     isLoading.value = false;
@@ -107,7 +113,9 @@ class AuthController extends GetxController {
     ));
 
     result.fold(
-      (failure) => Get.snackbar('Error', failure.message),
+      (failure) => Get.snackbar('Error', failure.message,
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 5)),
       (user) => _handleAuthSuccess(user),
     );
     isLoading.value = false;

@@ -60,8 +60,11 @@ class AuthRepositoryImpl implements AuthRepository {
     final response = await request();
     return Right(response);
   } on ServerException catch (e) {
-    return Left(ServerFailure(e.message));
+    return Left(ServerFailure("No connection found with server"));
   } on DioException catch (e) {
+    if (e.type == DioExceptionType.connectionTimeout) {
+      return Left(ServerFailure("There are connection problems, check your internet"));
+    }
     if (e.response?.statusCode == 401) {
       await secureStorage.delete(key: 'access_token');
       return Left(UnauthorizedFailure('Unauthorized'));
