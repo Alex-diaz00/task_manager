@@ -19,7 +19,7 @@ class SignupPage extends StatelessWidget {
         child: Column(
           children: [
             Image.asset(
-              "assets/images/signUp_dark.png",
+              "assets/images/signup.png",
               height: size.height * 0.35,
               width: double.infinity,
               fit: BoxFit.cover,
