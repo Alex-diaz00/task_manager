@@ -9,6 +9,8 @@ class LoginPage extends StatelessWidget {
   final AuthController controller = Get.find();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  LoginPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;

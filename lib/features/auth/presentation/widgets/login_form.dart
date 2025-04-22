@@ -9,7 +9,7 @@ class LoginForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final AuthController controller;
 
-  const LoginForm({
+  const LoginForm({super.key, 
     required this.formKey,
     required this.controller,
   });

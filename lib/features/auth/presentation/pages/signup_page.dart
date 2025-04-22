@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:task_manager/core/util/constants.dart';
 import 'package:task_manager/features/auth/presentation/controllers/auth_controller.dart';
@@ -9,6 +8,8 @@ import 'package:task_manager/features/auth/presentation/widgets/signup_form.dart
 class SignupPage extends StatelessWidget {
   final AuthController controller = Get.find();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  SignupPage({super.key});
 
   @override
   Widget build(BuildContext context) {

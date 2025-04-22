@@ -6,6 +6,8 @@ import 'package:task_manager/features/project/presentation/widgets/project_card.
 
 class ProjectsPage extends StatelessWidget {
   final ProjectController controller = Get.find();
+
+  ProjectsPage({super.key});
   
   @override
   Widget build(BuildContext context) {

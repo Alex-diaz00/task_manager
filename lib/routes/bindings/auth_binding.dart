@@ -1,5 +1,3 @@
-import 'package:dio/dio.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:task_manager/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:task_manager/features/auth/data/datasources/auth_remote_data_source_impl.dart';

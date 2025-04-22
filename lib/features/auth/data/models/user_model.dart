@@ -1,7 +1,7 @@
 import 'package:task_manager/features/auth/domain/entities/user_entity.dart';
 
 class UserModel extends UserEntity {
-  UserModel({
+  const UserModel({
     required super.id,
     required super.email,
     required super.token,
@@ -17,6 +17,7 @@ class UserModel extends UserEntity {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return {
       'id': id,

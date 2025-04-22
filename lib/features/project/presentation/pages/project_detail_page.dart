@@ -71,7 +71,7 @@ class ProjectDetailPage extends StatelessWidget {
                     leading:  CircleAvatar(child: Icon(Icons.person)),
                     title: Text(member.name),
                     subtitle: Text(member.email),
-                  )).toList(),
+                  )),
                 ],
               ),
             ),
