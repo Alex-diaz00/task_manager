@@ -11,43 +11,70 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Obx(() => Text(
-          'Welcome, ${authController.currentUser.value?.name ?? 'User'}!',
-          style: const TextStyle(fontSize: 20),
-        )),
+        title: Obx(
+          () => Text(
+            'Welcome ${authController.currentUser.value?.name ?? ''}!',
+            style: const TextStyle(fontSize: 20),
+          ),
+        ),
         actions: [
-          IconButton(
+          PopupMenuButton(
             icon: const Icon(Icons.account_circle),
-            onPressed: () => Get.toNamed('/profile'),
-          )
+            itemBuilder:
+                (context) => [
+                  const PopupMenuItem(value: 'logout', child: Text('Logout')),
+                ],
+            onSelected: (value) {
+              if (value == 'logout') {
+                _confirmLogout(context);
+              }
+            },
+          ),
         ],
       ),
-      body: Obx(() => IndexedStack(
-        index: authController.selectedTab.value,
-        children: const [
-          TasksSection(),
-          ProjectsSection(),
-          ProfileSection(),
-        ],
-      )),
-      bottomNavigationBar: Obx(() => BottomNavigationBar(
-        currentIndex: authController.selectedTab.value,
-        onTap: (index) => authController.selectedTab.value = index,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.task),
-            label: 'Tasks',
+      body: Obx(
+        () => IndexedStack(
+          index: authController.selectedTab.value,
+          children: const [TasksSection(), ProjectsSection(), ProfileSection()],
+        ),
+      ),
+      bottomNavigationBar: Obx(
+        () => BottomNavigationBar(
+          currentIndex: authController.selectedTab.value,
+          onTap: (index) => authController.selectedTab.value = index,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.task), label: 'Tasks'),
+            BottomNavigationBarItem(icon: Icon(Icons.work), label: 'Projects'),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _confirmLogout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Confirm Logout'),
+            content: const Text('Are you sure you want to logout?'),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: ()  {
+                  Get.back();    
+                },
+                child: const Text(
+                  'Logout',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.work),
-            label: 'Projects',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      )),
     );
   }
 }

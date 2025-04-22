@@ -25,9 +25,16 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, UserEntity>> signUp(String email, String password, String name) async {
-    return _handleRequest(() => remoteDataSource.signUp(email, password, name));
+Future<Either<Failure, UserEntity>> signUp(String email, String password, String name) async {
+  try {
+    final user = await remoteDataSource.signUp(email, password, name);
+    return Right(user);
+  } on ServerException catch (e) {
+    return Left(ServerFailure(e.message));
+  } on FormatException catch (_) {
+    return Left(ServerFailure('Invalid user data format received'));
   }
+}
 
   @override
   Future<Either<Failure, void>> signOut() async {
@@ -35,21 +42,19 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, UserEntity>> getCurrentUser() async {
-    try {
-      final token = await secureStorage.read(key: 'access_token');
-      if (token == null || token.isEmpty) {
-        return Left(CacheFailure('No authentication token found'));
-      }
-
-      final user = await remoteDataSource.getCurrentUser();
-      return Right(user);
-    } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
-    } catch (e) {
-      return Left(CacheFailure('Failed to get user data'));
+Future<Either<Failure, UserEntity>> getCurrentUser() async {
+  try {
+    final user = await remoteDataSource.getCurrentUser();
+    return Right(user);
+  } on ServerException catch (e) {
+    if (e.message.contains('Session expired')) {
+      return Left(UnauthorizedFailure(e.message));
     }
+    return Left(ServerFailure(e.message));
+  } on FormatException catch (_) {
+    return Left(ServerFailure('Invalid user profile data format'));
   }
+}
 
   Future<Either<Failure, T>> _handleRequest<T>(Future<T> Function() request) async {
   if (!await networkInfo.isConnected) {
@@ -59,31 +64,62 @@ class AuthRepositoryImpl implements AuthRepository {
   try {
     final response = await request();
     return Right(response);
-  } on ServerException catch (e) {
-    return Left(ServerFailure("No connection found with server"));
   } on DioException catch (e) {
-    if (e.type == DioExceptionType.connectionTimeout) {
-      return Left(ServerFailure("There are connection problems, check your internet"));
-    }
-    if (e.response?.statusCode == 401) {
-      await secureStorage.delete(key: 'access_token');
-      return Left(UnauthorizedFailure('Unauthorized'));
-    } else if (e.response?.statusCode == 404) {
-      return Left(NotFoundFailure('Resource not found'));
-    } else if (e.response?.statusCode == 400) {
-      final errorMessage = e.response?.data['message'] ?? 'Invalid request';
-      return Left(BadRequestFailure(errorMessage));
-    } else if (e.response?.statusCode == 500) {
-      return Left(ServerFailure('Internal server error'));
-    } else {
-      return Left(ServerFailure(
-        e.response?.data['message']?.toString() ?? 
-        e.message ?? 
-        'Unknown error occurred'
-      ));
-    }
+    return await _handleDioError<T>(e);
+  } on ServerException catch (e) {
+    return Left(ServerFailure(e.message));
   } catch (e) {
-    return Left(ServerFailure('Unknown error: ${e.toString()}'));
+    return Left(ServerFailure('An unexpected error occurred'));
+  }
+}
+
+Future<Either<Failure, T>> _handleDioError<T>(DioException e) async {
+  if (e.type == DioExceptionType.connectionTimeout ||
+      e.type == DioExceptionType.connectionError) {
+    return Left(NetworkFailure('Connection problems, check your internet'));
+  }
+
+  if (e.response == null) {
+    return Left(ServerFailure('No response from server'));
+  }
+
+  final statusCode = e.response!.statusCode;
+  final responseData = e.response!.data;
+
+  switch (statusCode) {
+    case 400:
+      final errorMsg = _extractErrorMessage(responseData);
+      return Left(BadRequestFailure(errorMsg));
+    
+    case 401:
+      await secureStorage.delete(key: 'access_token');
+      return Left(UnauthorizedFailure(
+        _extractErrorMessage(responseData, defaultMsg: 'Session expired')));
+    
+    case 404:
+      return Left(NotFoundFailure(
+        _extractErrorMessage(responseData, defaultMsg: 'Resource not found')));
+    
+    case 500:
+      return Left(ServerFailure(
+        _extractErrorMessage(responseData, defaultMsg: 'Internal server error')));
+    
+    default:
+      return Left(ServerFailure(
+        _extractErrorMessage(responseData, defaultMsg: 'Unknown server error')));
+  }
+}
+
+String _extractErrorMessage(dynamic responseData, {String defaultMsg = ''}) {
+  try {
+    if (responseData is Map) {
+      return responseData['message']?.toString() ?? 
+             responseData['error']?.toString() ?? 
+             defaultMsg;
+    }
+    return responseData.toString();
+  } catch (e) {
+    return defaultMsg;
   }
 }
 }

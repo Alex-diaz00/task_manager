@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_manager/core/error/extract_errors.dart';
 import 'package:task_manager/core/usecases/usecase.dart';
 import 'package:task_manager/features/auth/domain/entities/user_entity.dart';
 import 'package:task_manager/features/auth/domain/usecases/get_current_user_usecase.dart';
@@ -113,11 +114,14 @@ class AuthController extends GetxController {
     ));
 
     result.fold(
-      (failure) => Get.snackbar('Error', failure.message,
+    (failure) => ErrorHelpers.handleAuthError(failure),
+    (user) {
+      Get.offAllNamed('/home');
+      Get.snackbar('Success', 'Account created successfully',
       snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 5)),
-      (user) => _handleAuthSuccess(user),
-    );
+      duration: const Duration(seconds: 5));
+    },
+  );
     isLoading.value = false;
   }
 
