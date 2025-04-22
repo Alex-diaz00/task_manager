@@ -1,14 +1,14 @@
 import 'package:dio/dio.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class JwtInterceptor extends Interceptor {
-  final GetStorage storage;
+  final FlutterSecureStorage storage;
 
   JwtInterceptor(this.storage);
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    final token = storage.read('access_token');
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    final token = await storage.read(key: 'access_token');
     if (token != null) {
       options.headers['Authorization'] = 'Bearer $token';
     }

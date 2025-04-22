@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_manager/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:task_manager/features/project/presentation/controllers/project_controller.dart';
+import 'package:task_manager/features/project/presentation/pages/projects_page.dart';
 
 class HomePage extends StatelessWidget {
   final AuthController authController = Get.find();
 
-  HomePage({super.key});
+  HomePage({super.key}) {
+    Get.find<ProjectController>();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final authController = Get.find<AuthController>();
     return Scaffold(
       appBar: AppBar(
         title: Obx(
@@ -93,7 +98,23 @@ class ProjectsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Projects Content'));
+    return GetBuilder<ProjectController>(
+      init: ProjectController(
+        getProjectsUseCase: Get.find(),
+        createProjectUseCase: Get.find(),
+        updateProjectUseCase: Get.find(),
+        deleteProjectUseCase: Get.find(),
+      ),
+      builder: (controller) {
+        return Scaffold(
+          body: ProjectsPage(),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => Get.to(() => ProjectsPage()),
+            child: const Icon(Icons.add),
+          ),
+        );
+      },
+    );
   }
 }
 
