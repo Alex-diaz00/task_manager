@@ -34,7 +34,7 @@ class ProjectsPage extends StatelessWidget {
           itemCount: controller.projects.length,
           itemBuilder: (context, index) {
             final project = controller.projects[index];
-            return ProjectCard(
+            return ProjectCard(isOwner: true,
               project: project,
               onTap:
                   () => Get.to(() => ProjectDetailPage(projectId: project.id)),
@@ -117,7 +117,7 @@ class ProjectsPage extends StatelessWidget {
         const SizedBox(height: 8),
         ConstrainedBox(
           constraints: const BoxConstraints(
-            maxHeight: 200, // Altura máxima fija
+            maxHeight: 200,
           ),
           child: _buildMembersList(controller),
         ),

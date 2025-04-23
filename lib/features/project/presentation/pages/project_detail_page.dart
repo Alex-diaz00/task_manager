@@ -1,31 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_manager/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:task_manager/features/project/presentation/controllers/project_controller.dart';
 import 'package:task_manager/features/project/presentation/widgets/project_form.dart';
 
 class ProjectDetailPage extends StatelessWidget {
   final int projectId;
   final ProjectController controller = Get.find();
+  final AuthController authController = Get.find();
 
   ProjectDetailPage({super.key, required this.projectId});
 
   @override
   Widget build(BuildContext context) {
     final project = controller.projects.firstWhereOrNull((p) => p.id == projectId);
+    final isOwner = project != null && 
+        (project.owner.id.toString() == authController.currentUser.value?.id);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(project?.name ?? 'Project Details'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () => _showEditDialog(context),
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () => _confirmDelete(context),
-            color: Colors.red,
-          ),
+          if (isOwner)
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () => _showEditDialog(context),
+            ),
+          if (isOwner)
+            IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () => _confirmDelete(context),
+              color: Colors.red,
+            ),
         ],
       ),
       body: project == null
@@ -111,7 +117,7 @@ class ProjectDetailPage extends StatelessWidget {
             onPressed: () {
               controller.deleteProject(projectId);
               Get.back();
-              Get.back(); // Cerrar también la página de detalle
+              Get.back();
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),

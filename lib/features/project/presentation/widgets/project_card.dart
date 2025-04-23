@@ -5,15 +5,20 @@ import 'package:task_manager/features/project/domain/entities/project.dart';
 import 'package:task_manager/features/project/presentation/controllers/project_controller.dart';
 
 class ProjectCard extends StatelessWidget {
+
   final Project project;
   final VoidCallback? onTap;
   final bool showActions;
+  final bool isOwner;
+
+
 
   const ProjectCard({
     super.key,
     required this.project,
     this.onTap,
     this.showActions = true,
+    required this.isOwner,
   });
 
   @override
@@ -57,7 +62,7 @@ class ProjectCard extends StatelessWidget {
                 'Members: ${project.members.length}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
-              if (showActions) ...[
+              if (showActions && isOwner) ...[
                 const SizedBox(height: 8),
                 _buildActionButtons(context),
               ],
@@ -75,11 +80,16 @@ class ProjectCard extends StatelessWidget {
       children: [
         IconButton(
           icon: const Icon(Icons.edit, size: 20),
-          onPressed: () => _showEditDialog(context, controller),
+          onPressed: isOwner 
+      ? () => _showEditDialog(context, controller)
+      : null,
+  tooltip: isOwner ? 'Edit project' : 'Only project owner can edit',
         ),
         IconButton(
           icon: const Icon(Icons.delete, size: 20, color: Colors.red),
-          onPressed: () => _confirmDelete(context, controller),
+          onPressed: isOwner 
+      ? () => _confirmDelete(context, controller): null,
+      tooltip: isOwner ? 'Delete project' : 'Only project owner can delete',
         ),
       ],
     );

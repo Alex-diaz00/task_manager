@@ -49,12 +49,10 @@ class ProjectRemoteDataSourceImpl implements ProjectRemoteDataSource {
     try {
       final response = await dioClient.dio.get('/profile');
       
-      // Asumiendo que la respuesta es un array de miembros
       return (response.data as List)
           .map((memberJson) => MemberModel.fromJson(memberJson))
           .toList();
     } on DioException catch (e) {
-      // Manejo específico de errores de Dio
       if (e.response?.statusCode == 404) {
         throw Exception('Members endpoint not found');
       }

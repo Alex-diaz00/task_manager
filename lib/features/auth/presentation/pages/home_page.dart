@@ -95,42 +95,14 @@ class TasksSection extends StatelessWidget {
   }
 }
 
-// class ProjectsSection extends StatelessWidget {
-//   const ProjectsSection({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return GetBuilder<ProjectController>(
-//       init: ProjectController(
-//         getProjectsUseCase: Get.find(),
-//         createProjectUseCase: Get.find(),
-//         updateProjectUseCase: Get.find(),
-//         deleteProjectUseCase: Get.find(),
-//         getAvailableMembersUseCase: Get.find(),
-//       ),
-//       builder: (controller) {
-//         return Scaffold(
-//           body: ProjectsPage(),
-//           floatingActionButton: FloatingActionButton(
-//             onPressed: () => Get.to(() => ProjectsPage()),
-//             child: const Icon(Icons.add),
-//           ),
-//         );
-//       },
-//     );
-//   }
-// }
-
-
 class ProjectsSection extends StatelessWidget {
   const ProjectsSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Obtener el controlador (ya está inicializado en el binding)
     final controller = Get.find<ProjectController>();
+    final authController = Get.find<AuthController>();
     
-    // Cargar proyectos al iniciar
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.loadProjects();
     });
@@ -145,21 +117,25 @@ class ProjectsSection extends StatelessWidget {
       }
 
       return Scaffold(
-
         body: ListView.builder(
           itemCount: controller.projects.length,
           itemBuilder: (context, index) {
             final project = controller.projects[index];
+            final isOwner = authController.currentUser.value != null && 
+                (project.owner.id.toString() == authController.currentUser.value!.id);
+
             return ProjectCard(
               project: project,
               onTap: () => Get.to(() => ProjectDetailPage(projectId: project.id)),
+              showActions: true,
+              isOwner: isOwner,
             );
           },
         ),
         floatingActionButton: FloatingActionButton(
-            onPressed: () => _showCreateProjectDialog(context),
-            child: const Icon(Icons.add),
-          ),
+          onPressed: () => _showCreateProjectDialog(context),
+          child: const Icon(Icons.add),
+        ),
       );
     });
   }
@@ -237,7 +213,7 @@ void _showCreateProjectDialog(BuildContext context) {
         const SizedBox(height: 8),
         ConstrainedBox(
           constraints: const BoxConstraints(
-            maxHeight: 200, // Altura máxima fija
+            maxHeight: 200,
           ),
           child: _buildMembersList(controller),
         ),

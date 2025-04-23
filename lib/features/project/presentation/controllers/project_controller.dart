@@ -21,7 +21,6 @@ class ProjectController extends GetxController {
   final isLoading = false.obs;
   final errorMessage = RxString('');
   
-  // Estados para miembros
   final RxList<Member> availableMembers = <Member>[].obs;
   final RxList<int> selectedMemberIds = <int>[].obs;
   final RxBool isLoadingMembers = false.obs;
@@ -57,7 +56,7 @@ class ProjectController extends GetxController {
       (failure) => errorMessage.value = failure.message,
       (project) {
         projects.insert(0, project);
-        selectedMemberIds.clear(); // Limpiar selección después de crear
+        selectedMemberIds.clear();
       },
     );
     isLoading.value = false;
@@ -96,9 +95,6 @@ class ProjectController extends GetxController {
   }
 
 
-  
-
-  // Nuevos métodos para gestión de miembros
   Future<void> loadAvailableMembers() async {
     isLoadingMembers.value = true;
     membersErrorMessage.value = '';
@@ -112,7 +108,6 @@ class ProjectController extends GetxController {
       },
       (members) {
         availableMembers.assignAll(members);
-        // Mantener selección existente si los miembros aún existen
         selectedMemberIds.retainWhere(
           (id) => members.any((m) => m.id == id)
         );
@@ -145,7 +140,6 @@ class ProjectController extends GetxController {
     }
   }
 
-  // Búsqueda de miembros
   final RxString searchQuery = RxString('');
   List<Member> get filteredMembers {
     if (searchQuery.isEmpty) return availableMembers;
