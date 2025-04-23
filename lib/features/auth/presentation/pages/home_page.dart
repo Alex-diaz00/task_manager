@@ -146,7 +146,7 @@ void _showCreateProjectDialog(BuildContext context) {
     showDialog(
       context: context,
       builder:
-          (context) => Obx(() {
+          (context) {
             return AlertDialog(
               title: const Text('Create New Project'),
               content: SingleChildScrollView(
@@ -166,7 +166,7 @@ void _showCreateProjectDialog(BuildContext context) {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    _buildMemberSelectionSection(controller),
+                    Obx(() => _buildMemberSelectionSection(controller)),
                   ],
                 ),
               ),
@@ -184,7 +184,7 @@ void _showCreateProjectDialog(BuildContext context) {
                 ),
               ],
             );
-          }),
+          },
     );
   }
 

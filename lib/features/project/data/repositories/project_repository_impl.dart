@@ -54,7 +54,6 @@ class ProjectRepositoryImpl implements ProjectRepository {
     final response = await request();
     return Right(response);
   } on DioException catch (e) {
-    // Manejar específicamente el caso 204
     if (e.response?.statusCode == 204) {
       return Right(null as T);
     }

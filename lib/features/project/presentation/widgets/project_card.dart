@@ -96,12 +96,14 @@ class ProjectCard extends StatelessWidget {
   }
 
   void _showEditDialog(BuildContext context, ProjectController controller) {
-    final nameController = TextEditingController(text: project.name);
-    final descController = TextEditingController(text: project.description);
-    
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
+  final nameController = TextEditingController(text: project.name);
+  final descController = TextEditingController(text: project.description);
+  final isArchived = project.isArchived.obs;
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
         title: const Text('Edit Project'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -116,8 +118,12 @@ class ProjectCard extends StatelessWidget {
             ),
             Obx(() => CheckboxListTile(
               title: const Text('Archived'),
-              value: project.isArchived,
-              onChanged: (value) {},
+              value: isArchived.value,
+              onChanged: (value) {
+                if (value != null) {
+                  isArchived.value = value;
+                }
+              },
             )),
           ],
         ),
@@ -132,8 +138,9 @@ class ProjectCard extends StatelessWidget {
                 project.copyWith(
                   name: nameController.text.trim(),
                   description: descController.text.trim().isEmpty 
-                    ? null 
-                    : descController.text.trim(),
+                      ? null 
+                      : descController.text.trim(),
+                  isArchived: isArchived.value,
                 ),
               );
               Get.back();
@@ -141,9 +148,10 @@ class ProjectCard extends StatelessWidget {
             child: const Text('Save'),
           ),
         ],
-      ),
-    );
-  }
+      );
+    },
+  );
+}
 
   void _confirmDelete(BuildContext context, ProjectController controller) {
     showDialog(
