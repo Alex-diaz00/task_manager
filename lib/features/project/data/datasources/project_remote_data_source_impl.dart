@@ -66,4 +66,12 @@ class ProjectRemoteDataSourceImpl implements ProjectRemoteDataSource {
       rethrow;
     }
   }
+
+
+  Future<ProjectResponseModel> getMyProjects(int page) async {
+  final response = await dioClient.dio.get('/project/owner', queryParameters: {
+    'page': page,
+  });
+  return ProjectResponseModel.fromJson(response.data);
+}
 }

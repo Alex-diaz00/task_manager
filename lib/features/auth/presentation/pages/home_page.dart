@@ -104,64 +104,88 @@ class ProjectsSection extends StatelessWidget {
     final authController = Get.find<AuthController>();
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.loadProjects();
+      if (controller.projects.isEmpty) {
+        controller.loadProjects();
+      }
     });
 
     return Scaffold(
-      body: NotificationListener<ScrollNotification>(
-        onNotification: (notification) {
-          if (notification is ScrollEndNotification && 
-              notification.metrics.pixels == notification.metrics.maxScrollExtent) {
-            controller.loadMoreProjects();
-          }
-          return false;
-        },
-        child: Obx(() {
-          if (controller.isLoading.value ) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          return Column(
-            children: [
-              if (controller.errorMessage.value.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    controller.errorMessage.value,
-                    style: const TextStyle(color: Colors.red),
-                  ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Obx(() {
+              
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  FilterChip(
+                  label: const Text('My Projects'),
+                  selected: controller.showOnlyMyProjects.value,
+                  onSelected: (_) => controller.toggleMyProjectsFilter(),
                 ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: controller.projects.length + (controller.hasMore.value ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index >= controller.projects.length) {
-                      return Center(
+                ]
+              );
+            }),
+          ),
+          Expanded(
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (notification) {
+                if (notification is ScrollEndNotification && 
+                    notification.metrics.pixels == notification.metrics.maxScrollExtent) {
+                  controller.loadMoreProjects();
+                }
+                return false;
+              },
+              child: Obx(() {
+                if (controller.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return Stack(
+                  children: [
+                    ListView.builder(
+                      itemCount: controller.projects.length + (controller.hasMore.value ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index >= controller.projects.length) {
+                          return const SizedBox.shrink();
+                        }
+                        final project = controller.projects[index];
+                        final isOwner = authController.currentUser.value != null && 
+                            (project.owner.id.toString() == authController.currentUser.value!.id);
+
+                        return ProjectCard(
+                          project: project,
+                          onTap: () => Get.to(() => ProjectDetailPage(projectId: project.id)),
+                          showActions: true,
+                          isOwner: isOwner,
+                        );
+                      },
+                    ),
+                    if (controller.isLoadingMore.value)
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: controller.isLoadingMore.value
-                              ? const CircularProgressIndicator()
-                              : null,
+                          child: Column(
+                            children: [
+                              const Center(child: CircularProgressIndicator()),
+                              SizedBox(height: 8,),
+                              Text(
+                                "Loading more projects...",
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ],
+                          ),
                         ),
-                      );
-                    }
-                    
-                    final project = controller.projects[index];
-                    final isOwner = authController.currentUser.value != null && 
-                        (project.owner.id.toString() == authController.currentUser.value!.id);
-
-                    return ProjectCard(
-                      project: project,
-                      onTap: () => Get.to(() => ProjectDetailPage(projectId: project.id)),
-                      showActions: true,
-                      isOwner: isOwner,
-                    );
-                  },
-                ),
-              ),
-            ],
-          );
-        }),
+                      ),
+                  ],
+                );
+              }),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCreateProjectDialog(context),

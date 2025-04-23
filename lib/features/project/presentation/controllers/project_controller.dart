@@ -8,6 +8,7 @@ import 'package:task_manager/features/project/domain/entities/project.dart';
 import 'package:task_manager/features/project/domain/usecases/create_project.dart';
 import 'package:task_manager/features/project/domain/usecases/delete_project.dart';
 import 'package:task_manager/features/project/domain/usecases/get_members.dart';
+import 'package:task_manager/features/project/domain/usecases/get_my_projects.dart';
 import 'package:task_manager/features/project/domain/usecases/get_projects.dart';
 import 'package:task_manager/features/project/domain/usecases/update_project.dart';
 
@@ -17,6 +18,7 @@ class ProjectController extends GetxController {
   final UpdateProjectUseCase updateProjectUseCase;
   final DeleteProjectUseCase deleteProjectUseCase;
   final GetAvailableMembersUseCase getAvailableMembersUseCase;
+  final GetMyProjectsUseCase getMyProjectsUseCase;
 
   final projects = <Project>[].obs;
   final isLoading = false.obs;
@@ -24,6 +26,8 @@ class ProjectController extends GetxController {
   final errorMessage = RxString('');
   final currentPage = 1.obs;
   final hasMore = true.obs;
+  final showOnlyMyProjects = false.obs;
+  final isFilterLoading = false.obs;
   
   final RxList<Member> availableMembers = <Member>[].obs;
   final RxList<int> selectedMemberIds = <int>[].obs;
@@ -36,14 +40,24 @@ class ProjectController extends GetxController {
     required this.updateProjectUseCase,
     required this.deleteProjectUseCase,
     required this.getAvailableMembersUseCase,
+    required this.getMyProjectsUseCase,
   });
+
+  Future<void> toggleMyProjectsFilter() async {
+    showOnlyMyProjects.toggle();
+    currentPage.value = 1;
+    await loadProjects();
+  }
 
   Future<void> loadProjects({bool loadMore = false}) async {
     if (isLoading.value || (loadMore && isLoadingMore.value)) return;
     
     loadMore ? isLoadingMore.value = true : isLoading.value = true;
+    if (!loadMore) isFilterLoading.value = true;
     
-    final result = await getProjectsUseCase(currentPage.value);
+    final result = showOnlyMyProjects.value
+        ? await getMyProjectsUseCase(currentPage.value)
+        : await getProjectsUseCase(currentPage.value);
     
     result.fold(
       (failure) {
@@ -62,6 +76,7 @@ class ProjectController extends GetxController {
     );
     
     loadMore ? isLoadingMore.value = false : isLoading.value = false;
+    isFilterLoading.value = false;
   }
 
   Future<void> loadMoreProjects() async {

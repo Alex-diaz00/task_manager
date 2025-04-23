@@ -11,4 +11,5 @@ abstract class ProjectRepository {
   Future<Either<Failure, Project>> updateProject(int id, String? name, String? description, bool? isArchived);
   Future<Either<Failure, void>> deleteProject(int id);
   Future<Either<Failure, List<Member>>> getAvailableMembers();
+  Future<Either<Failure, ProjectResponse>> getMyProjects(int page);
 }

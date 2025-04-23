@@ -44,6 +44,11 @@ class ProjectRepositoryImpl implements ProjectRepository {
   Future<Either<Failure, List<Member>>> getAvailableMembers() async {
     return _handleRequest(() => remoteDataSource.getAvailableMembers());
   }
+
+  @override
+  Future<Either<Failure, ProjectResponse>> getMyProjects(int page) async {
+    return _handleRequest(() => remoteDataSource.getMyProjects(page));
+  }
   
   Future<Either<Failure, T>> _handleRequest<T>(Future<T> Function() request) async {
   if (!await networkInfo.isConnected) {
