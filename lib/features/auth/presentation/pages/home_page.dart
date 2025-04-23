@@ -262,7 +262,7 @@ void _showCreateProjectDialog(BuildContext context) {
             labelText: 'Search Members',
             prefixIcon: Icon(Icons.search),
           ),
-          onChanged: controller.searchQuery,
+          onChanged: controller.searchQuery.call,
         ),
         const SizedBox(height: 8),
         ConstrainedBox(

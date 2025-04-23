@@ -11,8 +11,6 @@ class ProjectCard extends StatelessWidget {
   final bool showActions;
   final bool isOwner;
 
-
-
   const ProjectCard({
     super.key,
     required this.project,
@@ -29,43 +27,49 @@ class ProjectCard extends StatelessWidget {
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      project.name,
-                      style: Theme.of(context).textTheme.titleMedium,
-                      overflow: TextOverflow.ellipsis,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            project.name,
+                            style: Theme.of(context).textTheme.titleMedium,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  if (project.isArchived)
-                    const Icon(Icons.archive, color: Colors.grey, size: 18),
-                ],
-              ),
-              if (project.description != null) ...[
-                const SizedBox(height: 4),
-                Text(
-                  project.description!,
-                  style: Theme.of(context).textTheme.bodySmall,
+                    if (project.description != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        project.description!,
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                    const SizedBox(height: 8),
+                    Text(
+                      'Owner: ${project.owner.name}',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    Text(
+                      'Members: ${project.members.length}',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
                 ),
-              ],
-              const SizedBox(height: 8),
-              Text(
-                'Owner: ${project.owner.name}',
-                style: Theme.of(context).textTheme.bodySmall,
               ),
-              Text(
-                'Members: ${project.members.length}',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              if (showActions && isOwner) ...[
-                const SizedBox(height: 8),
+              if (showActions && isOwner)
                 _buildActionButtons(context),
-              ],
+              if (project.isArchived)
+                const Icon(Icons.archive, color: Colors.grey, size: 18),
             ],
           ),
         ),
