@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:task_manager/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:task_manager/features/project/presentation/controllers/project_controller.dart';
 import 'package:task_manager/features/project/presentation/pages/project_detail_page.dart';
-import 'package:task_manager/features/project/presentation/pages/projects_page.dart';
 import 'package:task_manager/features/project/presentation/widgets/project_card.dart';
 
 class HomePage extends StatelessWidget {
