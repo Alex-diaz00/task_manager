@@ -14,19 +14,21 @@ class CreateProjectUseCase implements UseCase<Project, CreateProjectParams> {
 
   @override
   Future<Either<Failure, Project>> call(CreateProjectParams params) {
-    return repository.createProject(params.name, params.description);
+    return repository.createProject(params.name, params.description, params.members);
   }
 }
 
 class CreateProjectParams extends Equatable {
   final String name;
   final String? description;
+  final List<int> members;
 
   const CreateProjectParams({
     required this.name,
     this.description,
+    required this.members,
   });
 
   @override
-  List<Object?> get props => [name, description];
+  List<Object?> get props => [name, description, members];
 }

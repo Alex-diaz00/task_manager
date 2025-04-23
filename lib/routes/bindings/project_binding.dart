@@ -6,6 +6,7 @@ import 'package:task_manager/features/project/data/repositories/project_reposito
 import 'package:task_manager/features/project/domain/repositories/project_repository.dart';
 import 'package:task_manager/features/project/domain/usecases/create_project.dart';
 import 'package:task_manager/features/project/domain/usecases/delete_project.dart';
+import 'package:task_manager/features/project/domain/usecases/get_members.dart';
 import 'package:task_manager/features/project/domain/usecases/get_projects.dart';
 import 'package:task_manager/features/project/domain/usecases/update_project.dart';
 import 'package:task_manager/features/project/presentation/controllers/project_controller.dart';
@@ -31,6 +32,7 @@ class ProjectBinding implements Bindings {
     Get.lazyPut(() => CreateProjectUseCase(Get.find()));
     Get.lazyPut(() => UpdateProjectUseCase(Get.find()));
     Get.lazyPut(() => DeleteProjectUseCase(Get.find()));
+    Get.lazyPut(() => GetAvailableMembersUseCase(Get.find<ProjectRepository>()));
 
     // 4. Registra el Controller
     Get.lazyPut(() => ProjectController(
@@ -38,6 +40,7 @@ class ProjectBinding implements Bindings {
       createProjectUseCase: Get.find(),
       updateProjectUseCase: Get.find(),
       deleteProjectUseCase: Get.find(),
+      getAvailableMembersUseCase: Get.find(),
     ));
   }
 }

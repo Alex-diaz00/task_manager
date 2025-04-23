@@ -104,6 +104,7 @@ class ProjectsSection extends StatelessWidget {
         createProjectUseCase: Get.find(),
         updateProjectUseCase: Get.find(),
         deleteProjectUseCase: Get.find(),
+        getAvailableMembersUseCase: Get.find(),
       ),
       builder: (controller) {
         return Scaffold(
