@@ -20,7 +20,10 @@ class ProjectController extends GetxController {
 
   final projects = <Project>[].obs;
   final isLoading = false.obs;
+  final isLoadingMore = false.obs;
   final errorMessage = RxString('');
+  final currentPage = 1.obs;
+  final hasMore = true.obs;
   
   final RxList<Member> availableMembers = <Member>[].obs;
   final RxList<int> selectedMemberIds = <int>[].obs;
@@ -35,15 +38,39 @@ class ProjectController extends GetxController {
     required this.getAvailableMembersUseCase,
   });
 
-  Future<void> loadProjects() async {
-    isLoading.value = true;
-    final result = await getProjectsUseCase(NoParams());
+  Future<void> loadProjects({bool loadMore = false}) async {
+    if (isLoading.value || (loadMore && isLoadingMore.value)) return;
+    
+    loadMore ? isLoadingMore.value = true : isLoading.value = true;
+    
+    final result = await getProjectsUseCase(currentPage.value);
+    
     result.fold(
-      (failure) => errorMessage.value = failure.message,
-      (response) => projects.assignAll(response.items),
+      (failure) {
+        errorMessage.value = failure.message;
+        Get.snackbar('Error', failure.message);
+      },
+      (response) {
+        if (loadMore) {
+          projects.addAll(response.items);
+        } else {
+          projects.assignAll(response.items);
+        }
+        currentPage.value = response.meta.currentPage;
+        hasMore.value = response.links.next != null;
+      },
     );
-    isLoading.value = false;
+    
+    loadMore ? isLoadingMore.value = false : isLoading.value = false;
   }
+
+  Future<void> loadMoreProjects() async {
+    if (hasMore.value && !isLoadingMore.value) {
+      currentPage.value++;
+      await loadProjects(loadMore: true);
+    }
+  }
+
 
   Future<void> createProject(String name, String? description) async {
     isLoading.value = true;

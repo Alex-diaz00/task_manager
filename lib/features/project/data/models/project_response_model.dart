@@ -4,7 +4,8 @@ import 'package:task_manager/features/project/domain/entities/project_response.d
 class ProjectResponseModel extends ProjectResponse {
   const ProjectResponseModel({
     required super.items,
-    required super.totalItems,
+    required super.meta,
+    required super.links,
   });
 
   factory ProjectResponseModel.fromJson(Map<String, dynamic> json) {
@@ -12,7 +13,18 @@ class ProjectResponseModel extends ProjectResponse {
       items: (json['items'] as List)
           .map((e) => ProjectModel.fromJson(e))
           .toList(),
-      totalItems: json['meta']['totalItems'],
+      meta: PaginationMeta(
+        itemCount: json['meta']['itemCount'],
+        totalItems: json['meta']['totalItems'],
+        itemsPerPage: json['meta']['itemsPerPage'],
+        totalPages: json['meta']['totalPages'],
+        currentPage: json['meta']['currentPage'],
+      ),
+      links: PaginationLinks(
+        first: json['links']['first'],
+        next: json['links']['next'],
+        last: json['links']['last'],
+      ),
     );
   }
 }

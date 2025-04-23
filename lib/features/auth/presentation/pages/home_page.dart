@@ -107,33 +107,67 @@ class ProjectsSection extends StatelessWidget {
       controller.loadProjects();
     });
 
-    return Obx(() {
-      if (controller.isLoading.value) {
-        return const Center(child: CircularProgressIndicator());
-      }
+    return Scaffold(
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          if (notification is ScrollEndNotification && 
+              notification.metrics.pixels == notification.metrics.maxScrollExtent) {
+            controller.loadMoreProjects();
+          }
+          return false;
+        },
+        child: Obx(() {
+          if (controller.isLoading.value ) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-      return Scaffold(
-        body: ListView.builder(
-          itemCount: controller.projects.length,
-          itemBuilder: (context, index) {
-            final project = controller.projects[index];
-            final isOwner = authController.currentUser.value != null && 
-                (project.owner.id.toString() == authController.currentUser.value!.id);
+          return Column(
+            children: [
+              if (controller.errorMessage.value.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    controller.errorMessage.value,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: controller.projects.length + (controller.hasMore.value ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index >= controller.projects.length) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: controller.isLoadingMore.value
+                              ? const CircularProgressIndicator()
+                              : null,
+                        ),
+                      );
+                    }
+                    
+                    final project = controller.projects[index];
+                    final isOwner = authController.currentUser.value != null && 
+                        (project.owner.id.toString() == authController.currentUser.value!.id);
 
-            return ProjectCard(
-              project: project,
-              onTap: () => Get.to(() => ProjectDetailPage(projectId: project.id)),
-              showActions: true,
-              isOwner: isOwner,
-            );
-          },
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () => _showCreateProjectDialog(context),
-          child: const Icon(Icons.add),
-        ),
-      );
-    });
+                    return ProjectCard(
+                      project: project,
+                      onTap: () => Get.to(() => ProjectDetailPage(projectId: project.id)),
+                      showActions: true,
+                      isOwner: isOwner,
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        }),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showCreateProjectDialog(context),
+        child: const Icon(Icons.add),
+      ),
+    );
   }
 }
 

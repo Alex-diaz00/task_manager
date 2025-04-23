@@ -21,8 +21,8 @@ class ProjectRepositoryImpl implements ProjectRepository {
   });
 
   @override
-  Future<Either<Failure, ProjectResponse>> getProjects() async {
-    return _handleRequest(() => remoteDataSource.getProjects());
+  Future<Either<Failure, ProjectResponse>> getProjects(int page) async {
+    return _handleRequest(() => remoteDataSource.getProjects(page));
   }
 
   @override
