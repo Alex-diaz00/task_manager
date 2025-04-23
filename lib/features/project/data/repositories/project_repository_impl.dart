@@ -36,7 +36,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
   }
 
   @override
-  Future<Either<Failure, Project>> deleteProject(int id) async {
+  Future<Either<Failure, void>> deleteProject(int id) async {
     return _handleRequest(() => remoteDataSource.deleteProject(id));
   }
 
@@ -46,17 +46,21 @@ class ProjectRepositoryImpl implements ProjectRepository {
   }
   
   Future<Either<Failure, T>> _handleRequest<T>(Future<T> Function() request) async {
-    if (!await networkInfo.isConnected) {
-      return Left(NetworkFailure('No internet connection'));
-    }
+  if (!await networkInfo.isConnected) {
+    return Left(NetworkFailure('No internet connection'));
+  }
 
-    try {
-      final response = await request();
-      return Right(response);
-    } on DioException catch (e) {
-      return Left(ServerFailure(ErrorHelpers.handleDioError(e)));
-    } catch (e) {
-      return Left(ServerFailure('An unexpected error occurred'));
+  try {
+    final response = await request();
+    return Right(response);
+  } on DioException catch (e) {
+    // Manejar específicamente el caso 204
+    if (e.response?.statusCode == 204) {
+      return Right(null as T);
     }
+    return Left(ServerFailure(ErrorHelpers.handleDioError(e)));
+  } catch (e) {
+    return Left(ServerFailure('An unexpected error occurred'));
+  }
   }
 }

@@ -1,4 +1,5 @@
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_manager/core/error/failures.dart';
 import 'package:task_manager/core/usecases/usecase.dart';
@@ -88,9 +89,25 @@ class ProjectController extends GetxController {
     final result = await deleteProjectUseCase(projectId);
     
     result.fold(
-      (failure) => errorMessage.value = failure.message,
-      (_) => projects.removeWhere((p) => p.id == projectId),
-    );
+    (failure) {
+      errorMessage.value = failure.message;
+      Get.snackbar(
+        'Error',
+        failure.message,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 5));
+      loadProjects();
+    },
+    (_) {
+      projects.removeWhere((p) => p.id == projectId);
+      Get.snackbar(
+        'Success',
+        'Project deleted successfully',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 5));
+      
+    },
+  );
     isLoading.value = false;
   }
 

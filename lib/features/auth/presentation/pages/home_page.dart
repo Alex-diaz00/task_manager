@@ -112,10 +112,6 @@ class ProjectsSection extends StatelessWidget {
         return const Center(child: CircularProgressIndicator());
       }
 
-      if (controller.errorMessage.value.isNotEmpty) {
-        return Center(child: Text(controller.errorMessage.value));
-      }
-
       return Scaffold(
         body: ListView.builder(
           itemCount: controller.projects.length,

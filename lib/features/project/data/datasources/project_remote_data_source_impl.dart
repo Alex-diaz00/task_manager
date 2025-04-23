@@ -38,10 +38,15 @@ class ProjectRemoteDataSourceImpl implements ProjectRemoteDataSource {
   }
 
   @override
-  Future<ProjectModel> deleteProject(int id) async {
+  Future<void> deleteProject(int id) async {
     final response = await dioClient.dio.delete('/project/$id');
 
-    return ProjectModel.fromJson(response.data);
+    if (response.statusCode != 204) {
+      throw DioException(
+        requestOptions: response.requestOptions,
+        response: response,
+      );
+    }
   }
 
   @override

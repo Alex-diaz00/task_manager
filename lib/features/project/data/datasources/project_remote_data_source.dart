@@ -7,6 +7,6 @@ abstract class ProjectRemoteDataSource {
   Future<ProjectResponseModel> getProjects();
   Future<ProjectModel> createProject(String name, String? description, List<int> memberIds);
   Future<ProjectModel> updateProject(int id, String? name, String? description, bool? isArchived);
-  Future<ProjectModel> deleteProject(int id);
+  Future<void> deleteProject(int id);
   Future<List<MemberModel>> getAvailableMembers();
 }
