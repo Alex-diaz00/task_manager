@@ -23,7 +23,7 @@ class ProjectResponseModel extends ProjectResponse {
       links: PaginationLinks(
         first: json['links']['first'],
         next: json['links']['next'],
-        last: json['links']['last'],
+        last: json['links']['last'] ?? json['links']['first'],
       ),
     );
   }
