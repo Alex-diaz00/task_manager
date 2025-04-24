@@ -1,5 +1,3 @@
-
-
 import 'package:equatable/equatable.dart';
 import 'package:task_manager/features/project/domain/entities/member.dart';
 

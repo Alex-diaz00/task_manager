@@ -1,5 +1,4 @@
 
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_manager/core/error/failures.dart';
 import 'package:task_manager/core/usecases/usecase.dart';
@@ -201,9 +200,9 @@ class ProjectController extends GetxController {
 
   String _mapFailureToMessage(Failure failure) {
     switch (failure.runtimeType) {
-      case ServerFailure:
+      case ServerFailure _:
         return 'Server error: ${failure.message}';
-      case NetworkFailure:
+      case NetworkFailure _:
         return 'Network error: ${failure.message}';
       default:
         return 'Unexpected error: ${failure.message}';

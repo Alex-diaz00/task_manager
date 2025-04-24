@@ -1,7 +1,7 @@
+import 'package:task_manager/core/util/pagination.dart';
 import 'package:task_manager/features/project/data/models/project_model.dart';
-import 'package:task_manager/features/project/domain/entities/project_response.dart';
 
-class ProjectResponseModel extends ProjectResponse {
+class ProjectResponseModel extends PaginatedResponse<ProjectModel> {
   const ProjectResponseModel({
     required super.items,
     required super.meta,
