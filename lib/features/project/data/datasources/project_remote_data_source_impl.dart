@@ -5,6 +5,7 @@ import 'package:task_manager/features/project/data/datasources/project_remote_da
 import 'package:task_manager/features/project/data/models/member_model.dart';
 import 'package:task_manager/features/project/data/models/project_model.dart';
 import 'package:task_manager/features/project/data/models/project_response_model.dart';
+import 'package:task_manager/features/project/domain/usecases/update_members.dart';
 
 class ProjectRemoteDataSourceImpl implements ProjectRemoteDataSource {
   final DioClient dioClient;
@@ -68,10 +69,24 @@ class ProjectRemoteDataSourceImpl implements ProjectRemoteDataSource {
   }
 
 
+  @override
   Future<ProjectResponseModel> getMyProjects(int page) async {
   final response = await dioClient.dio.get('/project/owner', queryParameters: {
     'page': page,
   });
   return ProjectResponseModel.fromJson(response.data);
 }
+
+  @override
+  Future<ProjectModel> updateProjectMembers(UpdateProjectMembersParams params) async {
+  final response = await dioClient.dio.patch(
+    '/project/${params.projectId}/members',
+    data: {
+      'memberIds': params.memberIds,
+    },
+  );
+  return ProjectModel.fromJson(response.data);
+}
+
+
 }

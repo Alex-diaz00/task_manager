@@ -149,7 +149,7 @@ class ProjectCard extends StatelessWidget {
               );
               Get.back();
             },
-            child: const Text('Save'),
+            child: const Text('Update'),
           ),
         ],
       );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager/features/project/domain/entities/member.dart';
 import 'package:task_manager/features/project/domain/entities/project.dart';
 
@@ -35,6 +36,7 @@ class _ProjectFormState extends State<ProjectForm> {
     return Form(
       key: _formKey,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           TextFormField(
             controller: _nameController,
@@ -43,8 +45,9 @@ class _ProjectFormState extends State<ProjectForm> {
           ),
           TextFormField(
             controller: _descController,
-            decoration: const InputDecoration(labelText: 'Description (Optional)'),
+            decoration: const InputDecoration(labelText: 'Description'),
             maxLines: 3,
+            minLines: 1,
           ),
           if (widget.project != null) ...[
             const SizedBox(height: 16),
@@ -54,10 +57,16 @@ class _ProjectFormState extends State<ProjectForm> {
               onChanged: (value) => setState(() => _isArchived = value ?? false),
             ),
           ],
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: _submitForm,
-            child: Text(widget.project == null ? 'Create Project' : 'Update Project'),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(onPressed: Get.back, child: const Text('Cancel')),
+              TextButton(
+                onPressed: _submitForm,
+                child: Text(widget.project == null ? 'Create' : 'Update'),
+              ),
+            ],
           ),
         ],
       ),

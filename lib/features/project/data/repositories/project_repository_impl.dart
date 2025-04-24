@@ -6,10 +6,12 @@ import 'package:task_manager/core/error/extract_errors.dart';
 import 'package:task_manager/core/error/failures.dart';
 import 'package:task_manager/core/network/network_info.dart';
 import 'package:task_manager/features/project/data/datasources/project_remote_data_source.dart';
+import 'package:task_manager/features/project/data/models/project_model.dart';
 import 'package:task_manager/features/project/domain/entities/member.dart';
 import 'package:task_manager/features/project/domain/entities/project.dart';
 import 'package:task_manager/features/project/domain/entities/project_response.dart';
 import 'package:task_manager/features/project/domain/repositories/project_repository.dart';
+import 'package:task_manager/features/project/domain/usecases/update_members.dart';
 
 class ProjectRepositoryImpl implements ProjectRepository {
   final ProjectRemoteDataSource remoteDataSource;
@@ -66,5 +68,10 @@ class ProjectRepositoryImpl implements ProjectRepository {
   } catch (e) {
     return Left(ServerFailure('An unexpected error occurred'));
   }
+  }
+
+  @override
+  Future<Either<Failure, ProjectModel>> updateProjectMembers(UpdateProjectMembersParams params) async {
+    return _handleRequest(() => remoteDataSource.updateProjectMembers(params));
   }
 }

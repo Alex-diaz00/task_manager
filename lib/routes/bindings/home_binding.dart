@@ -4,6 +4,7 @@ import 'package:task_manager/features/auth/presentation/controllers/auth_control
 import 'package:task_manager/features/project/domain/repositories/project_repository.dart';
 import 'package:task_manager/features/project/domain/usecases/get_members.dart';
 import 'package:task_manager/features/project/domain/usecases/get_my_projects.dart';
+import 'package:task_manager/features/project/domain/usecases/update_members.dart';
 import 'package:task_manager/features/project/presentation/controllers/project_controller.dart';
 import 'package:task_manager/routes/bindings/project_binding.dart';
 
@@ -22,6 +23,7 @@ class HomeBinding implements Bindings {
 
     Get.lazyPut(() => GetAvailableMembersUseCase(Get.find<ProjectRepository>()));
     Get.lazyPut(() => GetMyProjectsUseCase(Get.find<ProjectRepository>()));
+    Get.lazyPut(() => UpdateProjectMembersUseCase(Get.find<ProjectRepository>()));
     Get.lazyPut(() => ProjectController(
       getProjectsUseCase: Get.find(),
       createProjectUseCase: Get.find(),
@@ -29,6 +31,7 @@ class HomeBinding implements Bindings {
       deleteProjectUseCase: Get.find(),
       getAvailableMembersUseCase: Get.find(),
       getMyProjectsUseCase: Get.find(),
+      updateProjectMembersUseCase: Get.find(),
     ));
   }
 }

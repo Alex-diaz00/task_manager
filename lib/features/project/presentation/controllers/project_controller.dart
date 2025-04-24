@@ -10,6 +10,7 @@ import 'package:task_manager/features/project/domain/usecases/delete_project.dar
 import 'package:task_manager/features/project/domain/usecases/get_members.dart';
 import 'package:task_manager/features/project/domain/usecases/get_my_projects.dart';
 import 'package:task_manager/features/project/domain/usecases/get_projects.dart';
+import 'package:task_manager/features/project/domain/usecases/update_members.dart';
 import 'package:task_manager/features/project/domain/usecases/update_project.dart';
 
 class ProjectController extends GetxController {
@@ -19,6 +20,7 @@ class ProjectController extends GetxController {
   final DeleteProjectUseCase deleteProjectUseCase;
   final GetAvailableMembersUseCase getAvailableMembersUseCase;
   final GetMyProjectsUseCase getMyProjectsUseCase;
+  final UpdateProjectMembersUseCase updateProjectMembersUseCase;
 
   final projects = <Project>[].obs;
   final isLoading = false.obs;
@@ -33,6 +35,7 @@ class ProjectController extends GetxController {
   final RxList<int> selectedMemberIds = <int>[].obs;
   final RxBool isLoadingMembers = false.obs;
   final RxString membersErrorMessage = RxString('');
+  
 
   ProjectController({
     required this.getProjectsUseCase,
@@ -41,7 +44,14 @@ class ProjectController extends GetxController {
     required this.deleteProjectUseCase,
     required this.getAvailableMembersUseCase,
     required this.getMyProjectsUseCase,
+    required this.updateProjectMembersUseCase,
   });
+
+  @override
+  void onInit() {
+    super.onInit();
+    ever(searchQuery, (_) => filterMembers());
+  }
 
   Future<void> toggleMyProjectsFilter() async {
     showOnlyMyProjects.toggle();
@@ -174,6 +184,7 @@ class ProjectController extends GetxController {
     );
     
     isLoadingMembers.value = false;
+    filterMembers();
   }
 
   void toggleMemberSelection(int memberId) {
@@ -200,13 +211,59 @@ class ProjectController extends GetxController {
   }
 
   final RxString searchQuery = RxString('');
-  List<Member> get filteredMembers {
-    if (searchQuery.isEmpty) return availableMembers;
-    return availableMembers.where((member) =>
-      member.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
-      (member.email?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false)
-    ).toList();
-  }
+  final RxList<Member> filteredMembers = <Member>[].obs;
 
+
+  void filterMembers() {
+  if (searchQuery.isEmpty) {
+    filteredMembers.assignAll(availableMembers);
+  } else {
+    filteredMembers.assignAll(
+      availableMembers.where((member) =>
+        member.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
+        (member.email.toLowerCase().contains(searchQuery.toLowerCase()))
+      ),
+    );
+  }
+}
+
+  Future<bool> updateProjectMembers({
+  required int projectId,
+  required List<int> memberIds,
+}) async {
+  try {
+    isLoading.value = true;
+    final result = await updateProjectMembersUseCase(
+      UpdateProjectMembersParams(
+        projectId: projectId,
+        memberIds: memberIds,
+      ),
+    );
+
+    return result.fold(
+      (failure) {
+        errorMessage.value = failure.message;
+        Get.snackbar(
+          'Error',
+          failure.message,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 5),
+        );
+        return false;
+      },
+      (updatedProject) {
+        final index = projects.indexWhere((p) => p.id == projectId);
+        if (index != -1) {
+          final updatedProjects = List<Project>.from(projects);
+          updatedProjects[index] = updatedProject;
+          projects.assignAll(updatedProjects);
+        }
+        return true;
+      },
+    );
+  } finally {
+    isLoading.value = false;
+  }
+}
 
 }
