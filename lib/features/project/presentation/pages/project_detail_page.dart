@@ -143,7 +143,7 @@ class ProjectDetailPage extends StatelessWidget {
                             children: controller.filteredMembers.map((member) {
                               return CheckboxListTile(
                                 title: Text(member.name),
-                                subtitle: Text(member.email ?? ''),
+                                subtitle: Text(member.email),
                                 value: selectedMembers.contains(member.id),
                                 onChanged: isLoading.value
                                     ? null
@@ -197,21 +197,26 @@ class ProjectDetailPage extends StatelessWidget {
 
   void _showEditDialog(BuildContext context) {
     final project = controller.projects.firstWhere((p) => p.id == projectId);
-    
+
     showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit Project'),
-        content: ProjectForm(
-          project: project,
-          onSubmit: (updatedProject) {
-            controller.updateProject(updatedProject);
-            Get.back();
-          },
-        ),
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Edit Project'),
+      content: ProjectForm(
+        project: project,
+        onSubmit: (updatedProject) async {
+          Get.back(); 
+          Get.dialog(
+            const Center(child: CircularProgressIndicator()),
+            barrierDismissible: false,
+          );
+          await controller.updateProject(updatedProject);
+          Get.back();
+        },
       ),
-    );
-  }
+    ),
+  );
+}
 
   void _confirmDelete(BuildContext context) {
     showDialog(
