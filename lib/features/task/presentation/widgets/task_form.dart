@@ -210,16 +210,15 @@ class _TaskFormState extends State<TaskForm> {
                 onChanged: (value) => setState(() => _priority = value!),
               ),
               const SizedBox(height: 16),
-              Obx(() => ListTile(
-                    title: const Text('Assigned Members'),
-                    subtitle: _selectedMembers.isEmpty
-                        ? const Text('No members assigned')
-                        : Text(
-                            '${_selectedMembers.length} members selected',
-                          ),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: _showMembersSelectionDialog,
-                  )),
+              ListTile(
+                  title: const Text('Assignees'),
+                  subtitle: Obx(
+                    () => Text('${_selectedMembers.length} selected'),
+                  ),
+                  trailing: const Icon(Icons.edit),
+                  onTap: _showMembersSelectionDialog,
+                ),
+              
             ],
           ),
         ),
