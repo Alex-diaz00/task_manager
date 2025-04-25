@@ -21,22 +21,28 @@ class TaskListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Project tasks',),
-        centerTitle: true,
-      ),
-      floatingActionButton: FloatingActionButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: const Icon(Icons.add, size: 28),
-        onPressed: () => Get.dialog(
-          TaskForm(
-            projectMembers: project.members,
-            projectId: project.id,
-            onSubmit: (params) async => await taskController.createTaskUseCase.call(params),
-            task: null,
-          ),
-        ),
-      ),
+      appBar: AppBar(title: const Text('Project tasks'), centerTitle: true),
+      floatingActionButton:
+          project.isArchived
+              ? null
+              : FloatingActionButton(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.add, size: 28),
+                onPressed:
+                    () => Get.dialog(
+                      TaskForm(
+                        projectMembers: project.members,
+                        projectId: project.id,
+                        onSubmit:
+                            (params) async => await taskController
+                                .createTaskUseCase
+                                .call(params),
+                        task: null,
+                      ),
+                    ),
+              ),
       body: Obx(() {
         if (taskController.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
