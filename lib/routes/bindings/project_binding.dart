@@ -12,6 +12,7 @@ import 'package:task_manager/features/project/domain/usecases/get_projects.dart'
 import 'package:task_manager/features/project/domain/usecases/update_members.dart';
 import 'package:task_manager/features/project/domain/usecases/update_project.dart';
 import 'package:task_manager/features/project/presentation/controllers/project_controller.dart';
+import 'package:task_manager/routes/bindings/task_binding.dart';
 
 class ProjectBinding implements Bindings {
   @override
@@ -46,5 +47,7 @@ class ProjectBinding implements Bindings {
       getMyProjectsUseCase: Get.find(),
       updateProjectMembersUseCase: Get.find(),
     ));
+
+    TaskBinding().dependencies();
   }
 }
