@@ -19,25 +19,28 @@ class ProjectDetailPage extends StatelessWidget {
     final isOwner = p != null && 
         (p.owner.id.toString() == authController.currentUser.value?.id);
 
-    return Scaffold(
+    return Stack(
+  children: [
+    Scaffold(
       appBar: AppBar(
         title: Text(p?.name ?? 'Project Details'),
         actions: [
-          if (isOwner) IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () => _showEditDialog(context),
-          ),
-          if (isOwner) IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () => _confirmDelete(context),
-            color: Colors.red,
-          ),
+          if (isOwner)
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () => _showEditDialog(context),
+            ),
+          if (isOwner)
+            IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () => _confirmDelete(context),
+              color: Colors.red,
+            ),
         ],
       ),
       body: p == null
           ? const Center(child: Text('Project not found'))
-          : 
-          SingleChildScrollView(
+          : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,56 +59,67 @@ class ProjectDetailPage extends StatelessWidget {
                     Text(
                       p.description!,
                       style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                  Row(
+                    children: [
+                      const Text(
+                        'Project Owner',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Expanded(child: SizedBox()),
+                      IconButton(
+                        icon: const Icon(Icons.task),
+                        onPressed: () => Get.toNamed(
+                          '/projects/${p.id}/tasks',
+                          arguments: p,
                         ),
-                        const SizedBox(height: 24),
-                      ],
-                      Row(
-                        children: [
-                          const Text(
-                            'Project Owner',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Expanded(child: SizedBox()),
-                          IconButton(
-                            icon: const Icon(Icons.task),
-                            onPressed:
-                                () => Get.toNamed(
-                                  '/projects/${p.id}/tasks', arguments: p
-                                ),
-                            tooltip: 'View tasks',
-                          ),
-                        ],
+                        tooltip: 'View tasks',
                       ),
-                      const SizedBox(height: 8),
-                      ListTile(
-                        leading: const CircleAvatar(child: Icon(Icons.person)),
-                        title: Text(p.owner.name),
-                        subtitle: Text(p.owner.email),
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  ListTile(
+                    leading: const CircleAvatar(child: Icon(Icons.person)),
+                    title: Text(p.owner.name),
+                    subtitle: Text(p.owner.email),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
                         'Team Members',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      if (isOwner) TextButton(
-                        onPressed: () => _showEditMembersDialog(context, p),
-                        child: const Text('Edit'),
-                      ),
+                      if (isOwner)
+                        TextButton(
+                          onPressed: () => _showEditMembersDialog(context, p),
+                          child: const Text('Edit'),
+                        ),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  ...p.members.map((member) => ListTile(
-                    leading: const CircleAvatar(child: Icon(Icons.person)),
-                    title: Text(member.name),
-                    subtitle: Text(member.email),
-                  )),
+                  ...p.members.map(
+                    (member) => ListTile(
+                      leading: const CircleAvatar(child: Icon(Icons.person)),
+                      title: Text(member.name),
+                      subtitle: Text(member.email),
+                    ),
+                  ),
                 ],
-              ),
+                      ),
+                    ),
+          ),
+          if (controller.isLoading.value)
+            Container(
+              color: Colors.black12,
+              child: const Center(child: CircularProgressIndicator()),
             ),
-    );
+        ],
+      );
+
     });
   }
 
@@ -219,17 +233,12 @@ class ProjectDetailPage extends StatelessWidget {
       content: ProjectForm(
         project: p,
         onSubmit: (updatedProject) async {
-          Get.back(); 
-          Get.dialog(
-            const Center(child: CircularProgressIndicator()),
-            barrierDismissible: false,
-          );
-          await controller.updateProject(updatedProject);
-          Get.back();
-        },
-      ),
-    ),
-  );
+                Get.back(); 
+                await controller.updateProject(updatedProject);
+              },
+            ),
+          ),
+    );
 }
 
   void _confirmDelete(BuildContext context) {

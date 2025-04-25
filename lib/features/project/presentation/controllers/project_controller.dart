@@ -130,6 +130,11 @@ class ProjectController extends GetxController {
         if (index != -1) {
           projects[index] = updatedProject;
         }
+        Get.snackbar(
+        'Success',
+        'Project updated successfully',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 5));
       },
     );
     isLoading.value = false;
