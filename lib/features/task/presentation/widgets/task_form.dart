@@ -8,7 +8,7 @@ import 'package:task_manager/features/task/domain/usecases/update_task.dart';
 
 class TaskForm extends StatefulWidget {
   final int projectId;
-  final List<Member> projectMembers; // Miembros del proyecto
+  final List<Member> projectMembers;
   final Task? task;
   final Function(dynamic) onSubmit;
 
@@ -31,6 +31,7 @@ class _TaskFormState extends State<TaskForm> {
   final _selectedMembers = <int>{}.obs;
   final _searchQuery = ''.obs;
   final _formKey = GlobalKey<FormState>();
+  final _isLoading = false.obs;
 
   @override
   void initState() {
@@ -39,7 +40,6 @@ class _TaskFormState extends State<TaskForm> {
     _priority = widget.task?.priority ?? TaskPriority.low;
     _status = widget.task?.status ?? TaskStatus.pending;
     
-    // Inicializar miembros seleccionados si estamos editando
     if (widget.task != null) {
       _selectedMembers.addAll(widget.task!.assignees.map((e) => e.id));
     }
@@ -110,6 +110,56 @@ class _TaskFormState extends State<TaskForm> {
     );
   }
 
+  Future<void> _submitForm() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    _isLoading.value = true;
+    Get.dialog(
+      const Center(child: CircularProgressIndicator()),
+      barrierDismissible: false,
+    );
+
+    try {
+      final params = widget.task == null
+          ? CreateTaskParams(
+              projectId: widget.projectId,
+              name: _nameController.text,
+              status: _status,
+              priority: _priority,
+              assigneeIds: _selectedMembers.toList(),
+            )
+          : UpdateTaskParams(
+              taskId: widget.task!.id,
+              name: _nameController.text,
+              status: _status,
+              priority: _priority,
+              assigneeIds: _selectedMembers.toList(),
+            );
+
+      await widget.onSubmit(params);
+      Get.back();
+      Get.back();
+
+      Get.snackbar(
+        'Success',
+        widget.task == null ? 'Task created successfully' : 'Task updated successfully',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 2),
+      );
+
+    } catch (e) {
+      Get.back();
+      Get.snackbar(
+        'Error',
+        'Failed to ${widget.task == null ? 'create' : 'update'} task',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 2),
+      );
+    } finally {
+      _isLoading.value = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -176,40 +226,19 @@ class _TaskFormState extends State<TaskForm> {
       ),
       actions: [
         TextButton(
-          onPressed: () => Get.back(),
+          onPressed: _isLoading.value ? null : () => Get.back(),
           child: const Text('Cancel'),
         ),
-        ElevatedButton(
+        Obx(() => ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).primaryColor,
           ),
-          onPressed: () {
-            if (!_formKey.currentState!.validate()) return;
-
-            final params = widget.task == null
-                ? CreateTaskParams(
-                    projectId: widget.projectId,
-                    name: _nameController.text,
-                    status: _status,
-                    priority: _priority,
-                    assigneeIds: _selectedMembers.toList(),
-                  )
-                : UpdateTaskParams(
-                    taskId: widget.task!.id,
-                    name: _nameController.text,
-                    status: _status,
-                    priority: _priority,
-                    assigneeIds: _selectedMembers.toList(),
-                  );
-            
-            widget.onSubmit(params);
-            Get.back();
-          },
+          onPressed: _isLoading.value ? null : _submitForm,
           child: Text(
             widget.task == null ? 'Create' : 'Update',
             style: const TextStyle(color: Colors.white),
           ),
-        ),
+        )),
       ],
     );
   }
