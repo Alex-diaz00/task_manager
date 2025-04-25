@@ -15,12 +15,13 @@ class ProjectDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-    final isOwner = 
-        (project.owner.id.toString() == authController.currentUser.value?.id);
+    final p = controller.projects.firstWhereOrNull((p) => p.id == project.id);
+    final isOwner = p != null && 
+        (p.owner.id.toString() == authController.currentUser.value?.id);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(project.name),
+        title: Text(p?.name ?? 'Project Details'),
         actions: [
           if (isOwner) IconButton(
             icon: const Icon(Icons.edit),
@@ -33,12 +34,15 @@ class ProjectDetailPage extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: p == null
+          ? const Center(child: Text('Project not found'))
+          : 
+          SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (project.isArchived)
+                  if (p.isArchived)
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                       decoration: BoxDecoration(
@@ -48,9 +52,9 @@ class ProjectDetailPage extends StatelessWidget {
                       child: const Text('ARCHIVED', style: TextStyle(color: Colors.grey)),
                     ),
                   const SizedBox(height: 16),
-                  if (project.description != null) ...[
+                  if (p.description != null) ...[
                     Text(
-                      project.description!,
+                      p.description!,
                       style: Theme.of(context).textTheme.bodyLarge,
                         ),
                         const SizedBox(height: 24),
@@ -66,7 +70,7 @@ class ProjectDetailPage extends StatelessWidget {
                             icon: const Icon(Icons.task),
                             onPressed:
                                 () => Get.toNamed(
-                                  '/projects/${project.id}/tasks', arguments: project 
+                                  '/projects/${p.id}/tasks', arguments: p
                                 ),
                             tooltip: 'View tasks',
                           ),
@@ -75,8 +79,8 @@ class ProjectDetailPage extends StatelessWidget {
                       const SizedBox(height: 8),
                       ListTile(
                         leading: const CircleAvatar(child: Icon(Icons.person)),
-                        title: Text(project.owner.name),
-                        subtitle: Text(project.owner.email),
+                        title: Text(p.owner.name),
+                        subtitle: Text(p.owner.email),
                       ),
                       const SizedBox(height: 24),
                       Row(
@@ -87,13 +91,13 @@ class ProjectDetailPage extends StatelessWidget {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       if (isOwner) TextButton(
-                        onPressed: () => _showEditMembersDialog(context, project),
+                        onPressed: () => _showEditMembersDialog(context, p),
                         child: const Text('Edit'),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  ...project.members.map((member) => ListTile(
+                  ...p.members.map((member) => ListTile(
                     leading: const CircleAvatar(child: Icon(Icons.person)),
                     title: Text(member.name),
                     subtitle: Text(member.email),
