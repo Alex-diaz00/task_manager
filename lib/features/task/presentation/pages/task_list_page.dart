@@ -68,12 +68,11 @@ class TaskListPage extends StatelessWidget {
               
               final task = taskController.tasks[index];
               final isAssigned = task.assignees.any(
-                (member) => member.id == authController.currentUser.value?.id);
-              
+                (member) => member.id.toString() == authController.currentUser.value?.id);
               return TaskCard(
                 task: task,
                 onEdit: isAssigned ? () => _showEditDialog(context, task) : null,
-                onDelete: isAssigned ? () => taskController.deleteTask(task.id) : null,
+                onDelete: isAssigned ? () => _confirmDelete(context, task.id) : null,
               );
             },
           ),
@@ -82,6 +81,28 @@ class TaskListPage extends StatelessWidget {
     );
   }
 
+  void _confirmDelete(BuildContext context, int taskId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Task'),
+        content: const Text('Are you sure you want to delete this task?'),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async{
+              Get.back();
+              await taskController.deleteTask(taskId);              
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
   void _showEditDialog(BuildContext context, Task task) {
     Get.dialog(
       TaskForm(

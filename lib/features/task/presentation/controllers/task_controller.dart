@@ -151,14 +151,24 @@ class TaskController extends GetxController {
     result.fold(
       (failure) {
         errorMessage.value = failure.message;
-        Get.snackbar('Error', failure.message);
+        Get.snackbar(
+          'Error',
+          failure.message,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 5),
+        );
       },
       (_) {
         tasks.removeWhere((t) => t.id == taskId);
-        Get.snackbar('Success', 'Task deleted successfully');
+        Get.snackbar(
+          'Success',
+          'Task deleted successfully',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 5),
+        );
       },
     );
-    
+
     isLoading.value = false;
   }
 }

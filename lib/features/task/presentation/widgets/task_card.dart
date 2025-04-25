@@ -40,7 +40,7 @@ class TaskCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        if (onDelete != null || onEdit != null) _buildActionButtons(),
+        _buildActionButtons(),
       ],
     );
   }
@@ -134,7 +134,7 @@ class TaskCard extends StatelessWidget {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  task.assignees.length == 0
+                  task.assignees.isEmpty
                       ? const Text('No members assigned')
                       : Expanded(
                         child: ListView(
