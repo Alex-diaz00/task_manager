@@ -46,7 +46,6 @@ class LoginPage extends StatelessWidget {
                     child: TextButton(
                       child: const Text("Forgot password"),
                       onPressed: () {
-                        // Navegación a recuperación de contraseña
                         // Get.toNamed(passwordRecoveryScreenRoute);
                       },
                     ),

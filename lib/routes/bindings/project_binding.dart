@@ -16,12 +16,10 @@ import 'package:task_manager/features/project/presentation/controllers/project_c
 class ProjectBinding implements Bindings {
   @override
   void dependencies() {
-    // 1. Registra el DataSource
     Get.lazyPut<ProjectRemoteDataSource>(
       () => ProjectRemoteDataSourceImpl(dioClient: Get.find()),
     );
 
-    // 2. Registra el Repository
     Get.lazyPut<ProjectRepository>(
       () => ProjectRepositoryImpl(
         remoteDataSource: Get.find(),
@@ -29,7 +27,7 @@ class ProjectBinding implements Bindings {
       ),
     );
 
-    // 3. Registra todos los casos de uso
+
     Get.lazyPut(() => GetProjectsUseCase(Get.find()));
     Get.lazyPut(() => CreateProjectUseCase(Get.find()));
     Get.lazyPut(() => UpdateProjectUseCase(Get.find()));
@@ -38,7 +36,7 @@ class ProjectBinding implements Bindings {
     Get.lazyPut(() => GetMyProjectsUseCase(Get.find<ProjectRepository>()));
     Get.lazyPut(() => UpdateProjectMembersUseCase(Get.find<ProjectRepository>()));
     
-    // 4. Registra el Controller
+
     Get.lazyPut(() => ProjectController(
       getProjectsUseCase: Get.find(),
       createProjectUseCase: Get.find(),

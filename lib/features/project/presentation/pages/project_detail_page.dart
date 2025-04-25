@@ -56,20 +56,34 @@ class ProjectDetailPage extends StatelessWidget {
                     Text(
                       project.description!,
                       style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    const SizedBox(height: 24),
-                  ],
-                  const Text(
-                    'Project Owner',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  ListTile(
-                    leading: const CircleAvatar(child: Icon(Icons.person)),
-                    title: Text(project.owner.name),
-                    subtitle: Text(project.owner.email),
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+                      Row(
+                        children: [
+                          const Text(
+                            'Project Owner',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Expanded(child: SizedBox()),
+                          IconButton(
+                            icon: const Icon(Icons.task),
+                            onPressed:
+                                () => Get.toNamed(
+                                  '/projects/${project.id}/tasks',
+                                ),
+                            tooltip: 'View tasks',
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      ListTile(
+                        leading: const CircleAvatar(child: Icon(Icons.person)),
+                        title: Text(project.owner.name),
+                        subtitle: Text(project.owner.email),
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(

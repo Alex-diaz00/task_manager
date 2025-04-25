@@ -25,17 +25,14 @@ void main() async {
 
 void configureDependencies() {
 
-  // Basic dependencies
   Get.lazyPut(() => Dio());
   Get.lazyPut(() => GetStorage());
   Get.lazyPut(() => const FlutterSecureStorage());
   Get.lazyPut(() => InternetConnectionChecker.createInstance());
   
-  // Network dependencies
   Get.lazyPut(() => DioClient(dio: Get.find(), storage: Get.find()));
   Get.lazyPut<NetworkInfo>(() => NetworkInfoImpl(Get.find()));
   
-  // Auth dependencies
   Get.lazyPut<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(dioClient: Get.find()),
   );
@@ -48,11 +45,9 @@ void configureDependencies() {
     ),
   );
   
-  // UseCases
   Get.lazyPut(() => SignInUseCase(Get.find()));
   Get.lazyPut(() => SignUpUseCase(Get.find()));
   
-  // Controllers
   Get.lazyPut(() => AuthController(
     signInUseCase: Get.find(),
     signUpUseCase: Get.find(),
