@@ -12,6 +12,7 @@ class TaskListPage extends StatelessWidget {
   final Project project;
   final TaskController taskController = Get.find();
   final AuthController authController = Get.find();
+  final isLoading = false.obs;
 
   TaskListPage({super.key, required this.project}) {
     taskController.currentPage.value = 1;
@@ -35,10 +36,9 @@ class TaskListPage extends StatelessWidget {
                       TaskForm(
                         projectMembers: project.members,
                         projectId: project.id,
-                        onSubmit:
-                            (params) async => await taskController
-                                .createTaskUseCase
-                                .call(params),
+                        onSubmit: (params) async {
+                          await taskController.createTask(params);
+                        },
                         task: null,
                       ),
                     ),

@@ -56,7 +56,6 @@ class TaskRepositoryImpl implements TaskRepository {
     } on DioException catch (e) {
       return dartz.Left(ServerFailure(ErrorHelpers.handleDioError(e)));
     } catch (e) {
-      print(e);
       return dartz.Left(ServerFailure('An unexpected error occurred'));
     }
   }

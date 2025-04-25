@@ -36,7 +36,6 @@ class TaskController extends GetxController {
     if (isLoading.value || (loadMore && isLoadingMore.value)) return;
 
     loadMore ? isLoadingMore.value = true : isLoading.value = true;
-    print('Loading tasks for project $projectId, page ${currentPage.value}');
     final result = await getProjectTasksUseCase(
       GetProjectTasksParams(projectId: projectId, page: currentPage.value),
     );
@@ -59,6 +58,51 @@ class TaskController extends GetxController {
 
     loadMore ? isLoadingMore.value = false : isLoading.value = false;
   }
+
+
+  Future<void> createTask(CreateTaskParams task) async {
+  isLoading.value = true;
+
+  try {
+    final result = await createTaskUseCase(task);
+
+    result.fold(
+      (failure) {
+        errorMessage.value = failure.message;
+        Get.back();
+        Get.snackbar(
+          'Error', 
+          failure.message,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 5),
+        );
+      },
+      (createdTask) {
+        tasks.insert(0, createdTask);
+        Get.back();
+        Get.back();
+        Get.snackbar(
+          'Success', 
+          'Task created successfully',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 2),
+        );
+      },
+    );
+  } catch (e) {
+    Get.back();
+    errorMessage.value = 'Unexpected error occurred';
+    Get.snackbar(
+      'Error', 
+      'Unexpected error occurred',
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 5),
+    );
+
+  } finally {
+    isLoading.value = false;
+  }
+}
 
   Future<void> loadMoreProjectTasks(int projectId) async {
     if (hasMore.value && !isLoadingMore.value) {

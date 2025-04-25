@@ -4,7 +4,6 @@ import 'package:task_manager/core/util/extensions/status_and_priority_extensions
 import 'package:task_manager/features/project/domain/entities/member.dart';
 import 'package:task_manager/features/task/domain/entities/task.dart';
 import 'package:task_manager/features/task/domain/usecases/create_task.dart';
-import 'package:task_manager/features/task/domain/usecases/update_task.dart';
 
 class TaskForm extends StatefulWidget {
   final int projectId;
@@ -111,54 +110,54 @@ class _TaskFormState extends State<TaskForm> {
   }
 
   Future<void> _submitForm() async {
-    if (!_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return;
 
-    _isLoading.value = true;
-    Get.dialog(
-      const Center(child: CircularProgressIndicator()),
-      barrierDismissible: false,
+  if (_selectedMembers.isEmpty) {
+    Get.snackbar(
+      'Error',
+      'You must assign at least one member',
+      snackPosition: SnackPosition.BOTTOM,
+    );
+    return;
+  }
+
+  if (_nameController.text.length < 2) {
+    Get.snackbar(
+      'Error',
+      'Task name must be at least 2 characters',
+      snackPosition: SnackPosition.BOTTOM,
+    );
+    return;
+  }
+  _isLoading.value = true;
+  Get.dialog(
+    const Center(child: CircularProgressIndicator()),
+    barrierDismissible: false,
+  );
+
+  try {
+    final params = CreateTaskParams(
+      projectId: widget.projectId,
+      name: _nameController.text,
+      status: _status,
+      priority: _priority,
+      assigneeIds: _selectedMembers.toList(),
     );
 
-    try {
-      final params = widget.task == null
-          ? CreateTaskParams(
-              projectId: widget.projectId,
-              name: _nameController.text,
-              status: _status,
-              priority: _priority,
-              assigneeIds: _selectedMembers.toList(),
-            )
-          : UpdateTaskParams(
-              taskId: widget.task!.id,
-              name: _nameController.text,
-              status: _status,
-              priority: _priority,
-              assigneeIds: _selectedMembers.toList(),
-            );
-
-      await widget.onSubmit(params);
-      Get.back();
-      Get.back();
-
-      Get.snackbar(
-        'Success',
-        widget.task == null ? 'Task created successfully' : 'Task updated successfully',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 2),
-      );
-
-    } catch (e) {
-      Get.back();
-      Get.snackbar(
-        'Error',
-        'Failed to ${widget.task == null ? 'create' : 'update'} task',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 2),
-      );
-    } finally {
-      _isLoading.value = false;
-    }
+    await widget.onSubmit(params);
+    
+  } catch (e) {
+    
+    Get.snackbar(
+      'Error',
+      'Failed to create task',
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  } finally {
+    Get.back();
+    _isLoading.value = false;
   }
+}
 
   @override
   Widget build(BuildContext context) {
