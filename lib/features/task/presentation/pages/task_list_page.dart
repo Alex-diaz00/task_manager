@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_manager/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:task_manager/features/project/domain/entities/project.dart';
 import 'package:task_manager/features/task/presentation/controllers/task_controller.dart';
 import 'package:task_manager/features/task/presentation/widgets/task_card.dart';
 import 'package:task_manager/features/task/presentation/widgets/task_form.dart';
@@ -8,13 +9,13 @@ import 'package:task_manager/features/task/presentation/widgets/task_form.dart';
 import '../../domain/entities/task.dart';
 
 class TaskListPage extends StatelessWidget {
-  final int projectId;
+  final Project project;
   final TaskController taskController = Get.find();
   final AuthController authController = Get.find();
 
-  TaskListPage({super.key, required this.projectId}) {
+  TaskListPage({super.key, required this.project}) {
     taskController.currentPage.value = 1;
-    taskController.loadProjectTasks(projectId);
+    taskController.loadProjectTasks(project.id);
   }
 
   @override
@@ -29,7 +30,8 @@ class TaskListPage extends StatelessWidget {
         child: const Icon(Icons.add, size: 28),
         onPressed: () => Get.dialog(
           TaskForm(
-            projectId: projectId,
+            projectMembers: project.members,
+            projectId: project.id,
             onSubmit: (params) async => await taskController.createTaskUseCase.call(params),
             task: null,
           ),
@@ -43,7 +45,7 @@ class TaskListPage extends StatelessWidget {
         return RefreshIndicator(
           onRefresh: () async {
             taskController.currentPage.value = 1;
-            await taskController.loadProjectTasks(projectId);
+            await taskController.loadProjectTasks(project.id);
           },
           child: ListView.separated(
             padding: const EdgeInsets.all(16),
@@ -52,7 +54,7 @@ class TaskListPage extends StatelessWidget {
             itemBuilder: (context, index) {
               if (index >= taskController.tasks.length) {
                 if (taskController.hasMore.value) {
-                  taskController.loadMoreProjectTasks(projectId);
+                  taskController.loadMoreProjectTasks(project.id);
                   return const Center(child: CircularProgressIndicator());
                 }
                 return const SizedBox();
@@ -77,7 +79,8 @@ class TaskListPage extends StatelessWidget {
   void _showEditDialog(BuildContext context, Task task) {
     Get.dialog(
       TaskForm(
-        projectId: projectId,
+        projectMembers: project.members,
+        projectId: project.id,
         onSubmit: (params) async => await taskController.updateTaskUseCase(params),
         task: task,
       ),

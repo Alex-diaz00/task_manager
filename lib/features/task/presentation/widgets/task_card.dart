@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/core/util/extensions/status_and_priority_extensions.dart';
 import 'package:task_manager/features/task/domain/entities/task.dart';
 
 class TaskCard extends StatelessWidget {
@@ -73,7 +74,7 @@ class TaskCard extends StatelessWidget {
             border: Border.all(color: _getStatusColor(task.status), width: 1.5),
           ),
           child: Text(
-            task.status.name.toUpperCase(),
+            task.status.label.toUpperCase(),
             style: TextStyle(
               color: _getStatusColor(task.status),
               fontWeight: FontWeight.bold,
@@ -89,7 +90,7 @@ class TaskCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
-            task.priority.name.toUpperCase(),
+            task.priority.label.toUpperCase(),
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -168,7 +169,7 @@ class TaskCard extends StatelessWidget {
     switch (status) {
       case TaskStatus.pending:
         return Colors.orange;
-      case TaskStatus.inProgress:
+      case TaskStatus.in_progress:
         return Colors.blue;
       case TaskStatus.completed:
         return Colors.green;

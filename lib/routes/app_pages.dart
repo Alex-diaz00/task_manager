@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:task_manager/features/auth/presentation/pages/home_page.dart';
 import 'package:task_manager/features/auth/presentation/pages/login_page.dart';
 import 'package:task_manager/features/auth/presentation/pages/signup_page.dart';
+import 'package:task_manager/features/project/domain/entities/project.dart';
 import 'package:task_manager/features/project/presentation/pages/project_detail_page.dart';
 import 'package:task_manager/features/task/presentation/pages/task_list_page.dart';
 import 'package:task_manager/routes/bindings/auth_binding.dart';
@@ -17,12 +18,12 @@ abstract class AppPages {
     GetPage(
       name: '/projects/:id',
       page:
-          () => ProjectDetailPage(projectId: int.parse(Get.parameters['id']!)),
+          () => ProjectDetailPage(project: Get.arguments as Project),
       binding: ProjectBinding(),
     ),
     GetPage(
       name: '/projects/:id/tasks',
-      page: () => TaskListPage(projectId: int.parse(Get.parameters['id']!)),
+      page: () => TaskListPage(project: Get.arguments as Project),
       binding: TaskBinding(),
     ),
   ];

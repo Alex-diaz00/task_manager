@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:task_manager/features/project/domain/entities/member.dart';
 
-enum TaskStatus { pending, inProgress, completed }
+enum TaskStatus { pending, in_progress, completed }
 enum TaskPriority { low, medium, high }
 
 class Task extends Equatable {

@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_manager/core/util/extensions/status_and_priority_extensions.dart';
+import 'package:task_manager/features/project/domain/entities/member.dart';
 import 'package:task_manager/features/task/domain/entities/task.dart';
 import 'package:task_manager/features/task/domain/usecases/create_task.dart';
 import 'package:task_manager/features/task/domain/usecases/update_task.dart';
 
 class TaskForm extends StatefulWidget {
   final int projectId;
+  final List<Member> projectMembers; // Miembros del proyecto
   final Task? task;
   final Function(dynamic) onSubmit;
 
   const TaskForm({
     super.key,
     required this.projectId,
+    required this.projectMembers,
     required this.onSubmit,
     this.task,
   });
@@ -24,96 +28,187 @@ class _TaskFormState extends State<TaskForm> {
   late final TextEditingController _nameController;
   late TaskPriority _priority;
   late TaskStatus _status;
+  final _selectedMembers = <int>{}.obs;
+  final _searchQuery = ''.obs;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.task?.name ?? '');
-    _priority = widget.task?.priority ?? TaskPriority.medium;
+    _priority = widget.task?.priority ?? TaskPriority.low;
     _status = widget.task?.status ?? TaskStatus.pending;
+    
+    // Inicializar miembros seleccionados si estamos editando
+    if (widget.task != null) {
+      _selectedMembers.addAll(widget.task!.assignees.map((e) => e.id));
+    }
+  }
+
+  List<Member> get _filteredMembers {
+    if (_searchQuery.isEmpty) {
+      return widget.projectMembers;
+    }
+    return widget.projectMembers.where((member) {
+      return member.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          member.email.toLowerCase().contains(_searchQuery.toLowerCase());
+    }).toList();
+  }
+
+  void _showMembersSelectionDialog() {
+    showDialog(
+      context: Get.context!,
+      builder: (context) => Obx(() {
+        return AlertDialog(
+          title: const Text('Assign Team Members'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Select members:', 
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'Search Members',
+                    prefixIcon: Icon(Icons.search),
+                  ),
+                  onChanged: (value) => _searchQuery.value = value,
+                ),
+                const SizedBox(height: 8),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 300),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: _filteredMembers.map((member) {
+                        return CheckboxListTile(
+                          title: Text(member.name),
+                          subtitle: Text(member.email),
+                          value: _selectedMembers.contains(member.id),
+                          onChanged: (value) {
+                            if (value == true) {
+                              _selectedMembers.add(member.id);
+                            } else {
+                              _selectedMembers.remove(member.id);
+                            }
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: const Text('Done'),
+            ),
+          ],
+        );
+      }),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.task == null ? 'Nueva Tarea' : 'Editar Tarea'),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Nombre de la tarea',
-                border: OutlineInputBorder(),
+      title: Text(widget.task == null ? 'New Task' : 'Edit Task'),
+      content: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Name',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required field' : null,
               ),
-              validator: (value) =>
-                  value?.isEmpty ?? true ? 'Campo requerido' : null,
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<TaskStatus>(
-              value: _status,
-              decoration: const InputDecoration(
-                labelText: 'Estado',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<TaskStatus>(
+                value: _status,
+                decoration: const InputDecoration(
+                  labelText: 'Status',
+                  border: OutlineInputBorder(),
+                ),
+                items: TaskStatus.values
+                    .map((status) => DropdownMenuItem(
+                          value: status,
+                          child: Text(status.label.toUpperCase()),
+                        ))
+                    .toList(),
+                onChanged: (value) => setState(() => _status = value!),
               ),
-              items: TaskStatus.values
-                  .map((status) => DropdownMenuItem(
-                        value: status,
-                        child: Text(status.name.toUpperCase()),
-                      ))
-                  .toList(),
-              onChanged: (value) => setState(() => _status = value!),
-            ),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<TaskPriority>(
-              value: _priority,
-              decoration: const InputDecoration(
-                labelText: 'Prioridad',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<TaskPriority>(
+                value: _priority,
+                decoration: const InputDecoration(
+                  labelText: 'Priority',
+                  border: OutlineInputBorder(),
+                ),
+                items: TaskPriority.values
+                    .map((priority) => DropdownMenuItem(
+                          value: priority,
+                          child: Text(priority.label.toUpperCase()),
+                        ))
+                    .toList(),
+                onChanged: (value) => setState(() => _priority = value!),
               ),
-              items: TaskPriority.values
-                  .map((priority) => DropdownMenuItem(
-                        value: priority,
-                        child: Text(priority.name.toUpperCase()),
-                      ))
-                  .toList(),
-              onChanged: (value) => setState(() => _priority = value!),
-            ),
-          ],
+              const SizedBox(height: 16),
+              Obx(() => ListTile(
+                    title: const Text('Assigned Members'),
+                    subtitle: _selectedMembers.isEmpty
+                        ? const Text('No members assigned')
+                        : Text(
+                            '${_selectedMembers.length} members selected',
+                          ),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: _showMembersSelectionDialog,
+                  )),
+            ],
+          ),
         ),
       ),
       actions: [
         TextButton(
           onPressed: () => Get.back(),
-          child: const Text('Cancelar'),
+          child: const Text('Cancel'),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).primaryColor,
           ),
           onPressed: () {
+            if (!_formKey.currentState!.validate()) return;
+
             final params = widget.task == null
                 ? CreateTaskParams(
                     projectId: widget.projectId,
                     name: _nameController.text,
                     status: _status,
                     priority: _priority,
-                    assigneeIds: [],
+                    assigneeIds: _selectedMembers.toList(),
                   )
                 : UpdateTaskParams(
                     taskId: widget.task!.id,
                     name: _nameController.text,
                     status: _status,
                     priority: _priority,
-                    assigneeIds: widget.task!.assignees.map((e) => e.id).toList(),
+                    assigneeIds: _selectedMembers.toList(),
                   );
             
             widget.onSubmit(params);
             Get.back();
           },
-          child: Text(widget.task == null ? 'Crear' : 'Guardar',
-              style: const TextStyle(color: Colors.white)),
+          child: Text(
+            widget.task == null ? 'Create' : 'Update',
+            style: const TextStyle(color: Colors.white),
+          ),
         ),
       ],
     );

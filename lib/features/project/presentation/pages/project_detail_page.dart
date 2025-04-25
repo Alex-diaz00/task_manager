@@ -6,22 +6,21 @@ import 'package:task_manager/features/project/presentation/controllers/project_c
 import 'package:task_manager/features/project/presentation/widgets/project_form.dart';
 
 class ProjectDetailPage extends StatelessWidget {
-  final int projectId;
+  final Project project;
   final ProjectController controller = Get.find();
   final AuthController authController = Get.find();
 
-  ProjectDetailPage({super.key, required this.projectId});
+  ProjectDetailPage({super.key, required this.project});
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-    final project = controller.projects.firstWhereOrNull((p) => p.id == projectId);
-    final isOwner = project != null && 
+    final isOwner = 
         (project.owner.id.toString() == authController.currentUser.value?.id);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(project?.name ?? 'Project Details'),
+        title: Text(project.name),
         actions: [
           if (isOwner) IconButton(
             icon: const Icon(Icons.edit),
@@ -34,10 +33,7 @@ class ProjectDetailPage extends StatelessWidget {
           ),
         ],
       ),
-      body: project == null
-          ? const Center(child: Text('Project not found'))
-          : 
-          SingleChildScrollView(
+      body: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,7 +66,7 @@ class ProjectDetailPage extends StatelessWidget {
                             icon: const Icon(Icons.task),
                             onPressed:
                                 () => Get.toNamed(
-                                  '/projects/${project.id}/tasks',
+                                  '/projects/${project.id}/tasks', arguments: project 
                                 ),
                             tooltip: 'View tasks',
                           ),
@@ -210,14 +206,14 @@ class ProjectDetailPage extends StatelessWidget {
 }
 
   void _showEditDialog(BuildContext context) {
-    final project = controller.projects.firstWhere((p) => p.id == projectId);
+    final p = controller.projects.firstWhere((p) => p.id == project.id);
 
     showDialog(
     context: context,
     builder: (context) => AlertDialog(
       title: const Text('Edit Project'),
       content: ProjectForm(
-        project: project,
+        project: p,
         onSubmit: (updatedProject) async {
           Get.back(); 
           Get.dialog(
@@ -245,7 +241,7 @@ class ProjectDetailPage extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              controller.deleteProject(projectId);
+              controller.deleteProject(project.id);
               Get.back();
               Get.back();
             },

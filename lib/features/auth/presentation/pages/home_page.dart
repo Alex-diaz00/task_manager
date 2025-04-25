@@ -154,7 +154,7 @@ class ProjectsSection extends StatelessWidget {
 
                         return ProjectCard(
                           project: project,
-                          onTap: () => Get.to(() => ProjectDetailPage(projectId: project.id)),
+                          onTap: () => Get.to(() => ProjectDetailPage(project: project)),
                           showActions: true,
                           isOwner: isOwner,
                         );
