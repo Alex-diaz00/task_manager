@@ -195,7 +195,7 @@ class ProjectDetailPage extends StatelessWidget {
                         duration: const Duration(seconds: 5),
                       );
                     }
-                    isLoading.value = true;
+                    isLoading.value = false;
                   },
             child: const Text('Update'),
           )
