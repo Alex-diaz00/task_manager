@@ -235,7 +235,7 @@ class _TaskFormState extends State<TaskForm> {
                 subtitle: Obx(
                   () => Text('${_selectedMembers.length} selected'),
                 ),
-                trailing: const Icon(Icons.edit),
+                trailing: const Icon(Icons.edit, color: Colors.green,),
                 onTap: _showMembersSelectionDialog,
               ),
             ],

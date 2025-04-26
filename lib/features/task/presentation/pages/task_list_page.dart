@@ -27,10 +27,7 @@ class TaskListPage extends StatelessWidget {
           project.isArchived
               ? null
               : FloatingActionButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(Icons.add, size: 28),
+                child: const Icon(Icons.add),
                 onPressed:
                     () => Get.dialog(
                       TaskForm(

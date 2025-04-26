@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_manager/core/util/custome_widgets.dart';
 import 'package:task_manager/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:task_manager/features/project/domain/entities/project.dart';
 import 'package:task_manager/features/project/presentation/controllers/project_controller.dart';
@@ -26,17 +27,10 @@ class ProjectDetailPage extends StatelessWidget {
             appBar: AppBar(
               title: Text(p?.name ?? 'Project Details'),
               actions: [
-                if (isOwner)
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () => _showEditDialog(context),
-                  ),
-                if (isOwner)
-                  IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () => _confirmDelete(context),
-                    color: Colors.red,
-                  ),
+                if (isOwner) ...{
+                  EditIconButton(onTap: () => _showEditDialog(context)),
+                  DeleteIconButton(onTap: () => _confirmDelete(context)),
+                }
               ],
             ),
             body:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_manager/core/util/custome_widgets.dart';
 import 'package:task_manager/core/util/extensions/project_extensions.dart';
 import 'package:task_manager/features/project/domain/entities/project.dart';
 import 'package:task_manager/features/project/presentation/controllers/project_controller.dart';
@@ -44,6 +45,12 @@ class ProjectCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
+
+                        if (project.isArchived)
+                          const ArchiveIcon(),
+                        SizedBox(width: 8),
+                        if (showActions && isOwner)
+                          _buildActionButtons(context),
                       ],
                     ),
                     if (project.description != null) ...[
@@ -65,9 +72,6 @@ class ProjectCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (showActions && isOwner) _buildActionButtons(context),
-              if (project.isArchived)
-                const Icon(Icons.archive, color: Colors.grey, size: 18),
             ],
           ),
         ),
@@ -80,17 +84,8 @@ class ProjectCard extends StatelessWidget {
 
     return Row(
       children: [
-        IconButton(
-          icon: const Icon(Icons.edit, size: 20),
-          onPressed:
-              isOwner ? () => _showEditDialog(context, controller) : null,
-          tooltip: isOwner ? 'Edit project' : 'Only project owner can edit',
-        ),
-        IconButton(
-          icon: const Icon(Icons.delete, size: 20, color: Colors.red),
-          onPressed: isOwner ? () => _confirmDelete(context, controller) : null,
-          tooltip: isOwner ? 'Delete project' : 'Only project owner can delete',
-        ),
+        EditIconButton(onTap: isOwner ? () => _showEditDialog(context, controller) : () {},),
+        DeleteIconButton(onTap: isOwner ? () => _confirmDelete(context, controller) : () {},),
       ],
     );
   }

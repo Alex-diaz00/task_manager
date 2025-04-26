@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager/core/util/custome_widgets.dart';
 import 'package:task_manager/core/util/extensions/status_and_priority_extensions.dart';
 import 'package:task_manager/features/task/domain/entities/task.dart';
 
@@ -50,15 +51,9 @@ class TaskCard extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (onEdit != null)
-          IconButton(
-            icon: const Icon(Icons.edit, color: Colors.blue),
-            onPressed: onEdit,
-          ),
+          EditIconButton(onTap: () => onEdit),
         if (onDelete != null)
-          IconButton(
-            icon: const Icon(Icons.delete, color: Colors.red),
-            onPressed: onDelete,
-          ),
+          DeleteIconButton(onTap: () => onDelete),
       ],
     );
   }
