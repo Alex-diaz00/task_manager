@@ -9,4 +9,5 @@ abstract class TaskRemoteDataSource {
   Future<void> deleteTask(int taskId);
   Future<TaskModel> getTask(int taskId);
   Future<PaginatedResponse<TaskModel>> getProjectTasks(int projectId, int page);
+  Future<PaginatedResponse<TaskModel>> getTasksByUser(int userId, int page);
 }

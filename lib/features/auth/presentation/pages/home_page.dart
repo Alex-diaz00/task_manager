@@ -4,6 +4,10 @@ import 'package:task_manager/features/auth/presentation/controllers/auth_control
 import 'package:task_manager/features/project/presentation/controllers/project_controller.dart';
 import 'package:task_manager/features/project/presentation/pages/project_detail_page.dart';
 import 'package:task_manager/features/project/presentation/widgets/project_card.dart';
+import 'package:task_manager/features/task/domain/entities/task.dart';
+import 'package:task_manager/features/task/presentation/controllers/task_controller.dart';
+import 'package:task_manager/features/task/presentation/widgets/task_card.dart';
+import 'package:task_manager/features/task/presentation/widgets/task_form.dart';
 
 class HomePage extends StatelessWidget {
   final AuthController authController = Get.find();
@@ -15,6 +19,11 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authController = Get.find<AuthController>();
+    
+    return Obx(() {
+      if (authController.currentUser.value == null) {
+        return const Center(child: CircularProgressIndicator());
+      }
     return Scaffold(
       appBar: AppBar(
         title: Obx(
@@ -56,6 +65,7 @@ class HomePage extends StatelessWidget {
         ),
       ),
     );
+  });
   }
 
   void _confirmLogout(BuildContext context) {
@@ -90,7 +100,153 @@ class TasksSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Tasks Content'));
+    final TaskController taskController = Get.put(TaskController(
+    createTaskUseCase: Get.find(),
+      updateTaskUseCase: Get.find(),
+      deleteTaskUseCase: Get.find(),
+      getTaskUseCase: Get.find(),
+      getProjectTasksUseCase: Get.find(),
+      getTasksByUserUseCase: Get.find(),
+  ));
+    final authController = Get.find<AuthController>();
+
+    void loadTasks() {
+      if (authController.currentUser.value != null) {
+        taskController.currentPage.value = 1;
+        taskController.tasks.clear();
+        taskController.loadTasksByUser(int.parse(authController.currentUser.value!.id));
+      }
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadTasks();
+    });
+
+    return RefreshIndicator(
+        onRefresh: () async {
+          taskController.currentPage.value = 1;
+          if (authController.currentUser.value != null) {
+            await taskController.loadTasksByUser(int.parse(authController.currentUser.value!.id));
+          }
+        },
+        child: Obx(() {
+          if (taskController.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (taskController.errorMessage.isNotEmpty) {
+            return Center(
+              child: Text(
+                taskController.errorMessage.value,
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
+          }
+
+          if (taskController.tasks.isEmpty) {
+            return const Center(child: Text('You have no tasks yet.'));
+          }
+
+          return NotificationListener<ScrollNotification>(
+            onNotification: (notification) {
+              if (notification is ScrollEndNotification &&
+                  notification.metrics.pixels == 
+                      notification.metrics.maxScrollExtent &&
+                  taskController.hasMore.value &&
+                  !taskController.isLoadingMore.value) {
+                taskController.loadMoreTasksByUser(
+                  int.parse(authController.currentUser.value!.id),
+                );
+              }
+              return false;
+            },
+            child: Stack(
+              children: [
+                ListView.separated(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: taskController.tasks.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final task = taskController.tasks[index];
+                    return TaskCard(
+                      task: task,
+                      onEdit: () => _showEditTaskDialog(context, task),
+                      onDelete: () => _confirmDeleteTask(context, task.id),
+                    );
+                  },
+                ),
+                if (taskController.isLoadingMore.value)
+                  const Positioned(
+                    bottom: 20,
+                    left: 0,
+                    right: 0,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+              ],
+            ),
+          );
+        }),
+    );
+  }
+
+  void _showEditTaskDialog(BuildContext context, Task task) {
+    final TaskController taskController = Get.put(TaskController(
+    createTaskUseCase: Get.find(),
+      updateTaskUseCase: Get.find(),
+      deleteTaskUseCase: Get.find(),
+      getTaskUseCase: Get.find(),
+      getProjectTasksUseCase: Get.find(),
+      getTasksByUserUseCase: Get.find(),
+  ));
+    Get.dialog(
+      TaskForm(
+        projectMembers: task.assignees,
+        projectId: 1,
+        onSubmit: (params) async {
+          Get.back();
+          Get.back();
+          await taskController.updateTask(params);
+          Get.snackbar(
+            'Success',
+            'Task updated successfully',
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 2),
+          );
+        }, 
+        task: task,
+      ),
+    );
+  }
+
+  void _confirmDeleteTask(BuildContext context, int taskId) {
+    final TaskController taskController = Get.put(TaskController(
+    createTaskUseCase: Get.find(),
+      updateTaskUseCase: Get.find(),
+      deleteTaskUseCase: Get.find(),
+      getTaskUseCase: Get.find(),
+      getProjectTasksUseCase: Get.find(),
+      getTasksByUserUseCase: Get.find(),
+  ));
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Task'),
+        content: const Text('Are you sure you want to delete this task?'),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Get.back();
+              await taskController.deleteTask(taskId);
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
   }
 }
 

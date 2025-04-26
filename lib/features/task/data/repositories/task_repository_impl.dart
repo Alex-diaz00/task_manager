@@ -44,6 +44,11 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
+  Future<dartz.Either<Failure, PaginatedResponse<Task>>> getTasksByUser(int userId, int page,) async {
+    return _handleRequest(() => remoteDataSource.getTasksByUser(userId, page));
+  }
+
+  @override
   Future<dartz.Either<Failure, PaginatedResponse<Task>>> getProjectTasks(
     int projectId,
     int page,

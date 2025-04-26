@@ -4,6 +4,7 @@ import 'package:task_manager/features/task/domain/usecases/create_task.dart';
 import 'package:task_manager/features/task/domain/usecases/delete_task.dart';
 import 'package:task_manager/features/task/domain/usecases/get_project_tasks.dart';
 import 'package:task_manager/features/task/domain/usecases/get_task.dart';
+import 'package:task_manager/features/task/domain/usecases/get_tasks_by_user.dart';
 import 'package:task_manager/features/task/domain/usecases/update_task.dart';
 
 class TaskController extends GetxController {
@@ -12,6 +13,7 @@ class TaskController extends GetxController {
   final DeleteTaskUseCase deleteTaskUseCase;
   final GetTaskUseCase getTaskUseCase;
   final GetProjectTasksUseCase getProjectTasksUseCase;
+  final GetTasksByUserUseCase getTasksByUserUseCase;
 
   final tasks = <Task>[].obs;
   final selectedTask = Rxn<Task>();
@@ -27,6 +29,7 @@ class TaskController extends GetxController {
     required this.deleteTaskUseCase,
     required this.getTaskUseCase,
     required this.getProjectTasksUseCase,
+    required this.getTasksByUserUseCase,
   });
 
   Future<void> loadProjectTasks(int projectId, {bool loadMore = false}) async {
@@ -35,6 +38,34 @@ class TaskController extends GetxController {
     loadMore ? isLoadingMore.value = true : isLoading.value = true;
     final result = await getProjectTasksUseCase(
       GetProjectTasksParams(projectId: projectId, page: currentPage.value),
+    );
+
+    result.fold(
+      (failure) {
+        errorMessage.value = failure.message;
+        Get.snackbar('Error', failure.message);
+      },
+      (response) {
+        if (loadMore) {
+          tasks.addAll(response.items);
+        } else {
+          tasks.assignAll(response.items);
+        }
+        currentPage.value = response.meta.currentPage;
+        hasMore.value = response.links.next != null;
+      },
+    );
+
+    loadMore ? isLoadingMore.value = false : isLoading.value = false;
+  }
+
+
+  Future<void> loadTasksByUser(int userId, {bool loadMore = false}) async {
+    if (isLoading.value || (loadMore && isLoadingMore.value)) return;
+
+    loadMore ? isLoadingMore.value = true : isLoading.value = true;
+    final result = await getTasksByUserUseCase(
+      GetTasksByUserParams(userId: userId, page: currentPage.value),
     );
 
     result.fold(
@@ -94,6 +125,13 @@ class TaskController extends GetxController {
       );
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> loadMoreTasksByUser(int userId) async {
+    if (hasMore.value && !isLoadingMore.value) {
+      currentPage.value++;
+      await loadTasksByUser(userId, loadMore: true);
     }
   }
 
@@ -187,6 +225,7 @@ class TaskController extends GetxController {
           final index = tasks.indexWhere((t) => t.id == updatedTask.id);
           if (index != -1) {
             tasks[index] = updatedTask;
+            print('La tarea actualizada ${tasks[index]}');
             Get.snackbar(
               'Successd',
               'Task updated successfully',

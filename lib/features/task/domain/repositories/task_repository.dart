@@ -14,4 +14,5 @@ abstract class TaskRepository {
     int projectId,
     int page,
   );
+  Future<dartz.Either<Failure, PaginatedResponse<Task>>> getTasksByUser(int userId, int page);
 }

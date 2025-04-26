@@ -62,4 +62,16 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
     );
     return TaskResponseModel.fromJson(response.data);
   }
+
+  @override
+  Future<PaginatedResponse<TaskModel>> getTasksByUser(
+    int userId,
+    int page,
+  ) async {
+    final response = await dioClient.dio.get(
+      '/task/user/$userId',
+      queryParameters: {'page': page},
+    );
+    return TaskResponseModel.fromJson(response.data);
+  }
 }

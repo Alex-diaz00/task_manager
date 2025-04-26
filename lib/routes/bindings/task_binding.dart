@@ -10,6 +10,7 @@ import 'package:task_manager/features/task/domain/usecases/create_task.dart';
 import 'package:task_manager/features/task/domain/usecases/delete_task.dart';
 import 'package:task_manager/features/task/domain/usecases/get_project_tasks.dart';
 import 'package:task_manager/features/task/domain/usecases/get_task.dart';
+import 'package:task_manager/features/task/domain/usecases/get_tasks_by_user.dart';
 import 'package:task_manager/features/task/domain/usecases/update_task.dart';
 import 'package:task_manager/features/task/presentation/controllers/task_controller.dart';
 
@@ -35,6 +36,7 @@ class TaskBinding implements Bindings {
     Get.lazyPut(() => DeleteTaskUseCase(Get.find()));
     Get.lazyPut(() => GetTaskUseCase(Get.find()));
     Get.lazyPut(() => GetProjectTasksUseCase(Get.find()));
+    Get.lazyPut(() => GetTasksByUserUseCase(Get.find()));
     
     Get.lazyPut(() => TaskController(
       createTaskUseCase: Get.find(),
@@ -42,6 +44,7 @@ class TaskBinding implements Bindings {
       deleteTaskUseCase: Get.find(),
       getTaskUseCase: Get.find(),
       getProjectTasksUseCase: Get.find(),
+      getTasksByUserUseCase: Get.find(),
     ));
   }
 }

@@ -10,7 +10,15 @@ import '../../domain/entities/task.dart';
 
 class TaskListPage extends StatelessWidget {
   final Project project;
-  final TaskController taskController = Get.find();
+
+  final TaskController taskController = Get.put(TaskController(
+    createTaskUseCase: Get.find(),
+      updateTaskUseCase: Get.find(),
+      deleteTaskUseCase: Get.find(),
+      getTaskUseCase: Get.find(),
+      getProjectTasksUseCase: Get.find(),
+      getTasksByUserUseCase: Get.find(),
+  ));
   final AuthController authController = Get.find();
   final isLoading = false.obs;
 

@@ -4,6 +4,7 @@ import 'package:task_manager/features/auth/presentation/controllers/auth_control
 import 'package:task_manager/features/project/domain/entities/project.dart';
 import 'package:task_manager/features/project/presentation/controllers/project_controller.dart';
 import 'package:task_manager/features/project/presentation/widgets/project_form.dart';
+import 'package:task_manager/features/task/presentation/controllers/task_controller.dart';
 
 class ProjectDetailPage extends StatelessWidget {
   final Project project;
@@ -80,11 +81,13 @@ class ProjectDetailPage extends StatelessWidget {
                               Expanded(child: SizedBox()),
                               IconButton(
                                 icon: const Icon(Icons.task),
-                                onPressed:
-                                    () => Get.toNamed(
-                                      '/projects/${p.id}/tasks',
-                                      arguments: p,
-                                    ),
+                                onPressed: () {
+                                  Get.delete<TaskController>(force: true);
+                                  Get.toNamed(
+                                    '/projects/${p.id}/tasks',
+                                    arguments: p,
+                                  );
+                                },
                                 tooltip: 'View tasks',
                               ),
                             ],
