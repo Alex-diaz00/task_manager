@@ -66,7 +66,8 @@ class TaskCard extends StatelessWidget {
   }
 
   Widget _buildStatusAndPriorityAndAssigneesButton(BuildContext context) {
-    return Row(
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -100,7 +101,6 @@ class TaskCard extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: 12),
         _buildAssigneesButton(context),
       ],
     );
