@@ -79,8 +79,6 @@ class TaskController extends GetxController {
       },
       (createdTask) {
         tasks.insert(0, createdTask);
-        Get.back();
-        Get.back();
         Get.snackbar(
           'Success', 
           'Task created successfully',
@@ -171,4 +169,51 @@ class TaskController extends GetxController {
 
     isLoading.value = false;
   }
+
+
+  Future<void> updateTask(UpdateTaskParams params) async {
+  isLoading.value = true;
+
+  try {
+    final result = await updateTaskUseCase(params);
+
+    result.fold(
+      (failure) {
+        errorMessage.value = failure.message;
+        Get.back();
+        Get.snackbar(
+          'Error',
+          failure.message,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 5),
+        );
+      },
+      (updatedTask) {
+
+        final index = tasks.indexWhere((t) => t.id == updatedTask.id);
+        if (index != -1) {
+          tasks[index] = updatedTask;
+          Get.snackbar(
+            'Successd',
+            'Task updated successfully',
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 2),
+          );
+        }
+      },
+    );
+  } catch (e) {
+    errorMessage.value = 'Unexpected error occurred';
+    Get.snackbar(
+      'Error',
+      'Unexpected error occurred',
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 5),
+    );
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+
 }

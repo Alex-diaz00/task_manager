@@ -37,7 +37,15 @@ class TaskListPage extends StatelessWidget {
                         projectMembers: project.members,
                         projectId: project.id,
                         onSubmit: (params) async {
+                          Get.back();
+                          Get.back();
                           await taskController.createTask(params);
+                          Get.snackbar(
+                            'Success',
+                            'Task created successfully',
+                            snackPosition: SnackPosition.BOTTOM,
+                            duration: const Duration(seconds: 2),
+                          );
                         },
                         task: null,
                       ),
@@ -108,7 +116,17 @@ class TaskListPage extends StatelessWidget {
       TaskForm(
         projectMembers: project.members,
         projectId: project.id,
-        onSubmit: (params) async => await taskController.updateTaskUseCase(params),
+        onSubmit: (params) async {
+          Get.back();
+          Get.back();
+          await taskController.updateTask(params);
+          Get.snackbar(
+            'Success',
+            'Task updated successfully',
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 2),
+          );
+        },
         task: task,
       ),
     );

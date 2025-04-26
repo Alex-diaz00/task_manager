@@ -4,6 +4,7 @@ import 'package:task_manager/core/util/extensions/status_and_priority_extensions
 import 'package:task_manager/features/project/domain/entities/member.dart';
 import 'package:task_manager/features/task/domain/entities/task.dart';
 import 'package:task_manager/features/task/domain/usecases/create_task.dart';
+import 'package:task_manager/features/task/domain/usecases/update_task.dart';
 
 class TaskForm extends StatefulWidget {
   final int projectId;
@@ -136,15 +137,27 @@ class _TaskFormState extends State<TaskForm> {
   );
 
   try {
-    final params = CreateTaskParams(
-      projectId: widget.projectId,
-      name: _nameController.text,
-      status: _status,
-      priority: _priority,
-      assigneeIds: _selectedMembers.toList(),
-    );
-
-    await widget.onSubmit(params);
+    if (widget.task != null) {
+      await widget.onSubmit(
+        UpdateTaskParams(
+          taskId: widget.task!.id,
+          name: _nameController.text,
+          status: _status,
+          priority: _priority,
+          assigneeIds: _selectedMembers.toList(),
+        ),
+      );
+    } else {
+      await widget.onSubmit(
+        CreateTaskParams(
+          projectId: widget.projectId,
+          name: _nameController.text,
+          status: _status,
+          priority: _priority,
+          assigneeIds: _selectedMembers.toList(),
+        ),
+      );
+    }
     
   } catch (e) {
     
