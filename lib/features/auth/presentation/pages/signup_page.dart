@@ -43,12 +43,14 @@ class SignupPage extends StatelessWidget {
                   const SizedBox(height: AppConstants.defaultPadding),
                   Row(
                     children: [
-                      Obx(() => Checkbox(
-                            value: controller.agreeTerms.value,
-                            onChanged: (value) {
-                              controller.agreeTerms.value = value!;
-                            },
-                          )),
+                      Obx(
+                        () => Checkbox(
+                          value: controller.agreeTerms.value,
+                          onChanged: (value) {
+                            controller.agreeTerms.value = value!;
+                          },
+                        ),
+                      ),
                       Expanded(
                         child: Text.rich(
                           TextSpan(
@@ -60,10 +62,11 @@ class SignupPage extends StatelessWidget {
                                   color: AppConstants.primaryColor,
                                   fontWeight: FontWeight.w500,
                                 ),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    // Get.toNamed(termsOfServicesScreenRoute);
-                                  },
+                                recognizer:
+                                    TapGestureRecognizer()
+                                      ..onTap = () {
+                                        // Get.toNamed(termsOfServicesScreenRoute);
+                                      },
                               ),
                               const TextSpan(text: "& "),
                               TextSpan(
@@ -72,49 +75,53 @@ class SignupPage extends StatelessWidget {
                                   color: AppConstants.primaryColor,
                                   fontWeight: FontWeight.w500,
                                 ),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    // Get.toNamed(privacyPolicyScreenRoute);
-                                  },
+                                recognizer:
+                                    TapGestureRecognizer()
+                                      ..onTap = () {
+                                        // Get.toNamed(privacyPolicyScreenRoute);
+                                      },
                               ),
                             ],
                           ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                   const SizedBox(height: AppConstants.defaultPadding * 2),
-                  Obx(() => controller.isLoading.value
-                      ? Center(child: const CircularProgressIndicator())
-                      : ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate() && 
-                                controller.agreeTerms.value) {
-                              controller.signUp();
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size(double.infinity, 48),
-                          ),
-                          child: const Text("CREATE ACCOUNT"),
-                        )),
+                  Obx(
+                    () =>
+                        controller.isLoading.value
+                            ? Center(child: const CircularProgressIndicator())
+                            : ElevatedButton(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate() &&
+                                    controller.agreeTerms.value) {
+                                  controller.signUp();
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(double.infinity, 48),
+                              ),
+                              child: const Text("CREATE ACCOUNT"),
+                            ),
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text("Already have an account?"),
                       TextButton(
-                        onPressed:  () {
+                        onPressed: () {
                           final controller = Get.find<AuthController>();
                           controller.clearFields();
                           Get.toNamed('/login');
-                        }, 
+                        },
                         child: const Text("Log in"),
-                      )
+                      ),
                     ],
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

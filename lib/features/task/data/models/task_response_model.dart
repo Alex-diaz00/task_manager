@@ -10,9 +10,7 @@ class TaskResponseModel extends PaginatedResponse<TaskModel> {
 
   factory TaskResponseModel.fromJson(Map<String, dynamic> json) {
     return TaskResponseModel(
-      items: (json['items'] as List)
-          .map((e) => TaskModel.fromJson(e))
-          .toList(),
+      items: (json['items'] as List).map((e) => TaskModel.fromJson(e)).toList(),
       meta: PaginationMeta(
         itemCount: json['meta']['itemCount'],
         totalItems: json['meta']['totalItems'],

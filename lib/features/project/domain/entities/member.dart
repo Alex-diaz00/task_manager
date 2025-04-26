@@ -5,11 +5,7 @@ class Member extends Equatable {
   final String name;
   final String email;
 
-  const Member({
-    required this.id,
-    required this.name,
-    required this.email,
-  });
+  const Member({required this.id, required this.name, required this.email});
 
   @override
   List<Object> get props => [id, name, email];

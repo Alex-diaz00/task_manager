@@ -10,9 +10,8 @@ class ProjectResponseModel extends PaginatedResponse<ProjectModel> {
 
   factory ProjectResponseModel.fromJson(Map<String, dynamic> json) {
     return ProjectResponseModel(
-      items: (json['items'] as List)
-          .map((e) => ProjectModel.fromJson(e))
-          .toList(),
+      items:
+          (json['items'] as List).map((e) => ProjectModel.fromJson(e)).toList(),
       meta: PaginationMeta(
         itemCount: json['meta']['itemCount'],
         totalItems: json['meta']['totalItems'],

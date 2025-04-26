@@ -1,4 +1,3 @@
-
 import 'package:task_manager/features/project/data/models/member_model.dart';
 import 'package:task_manager/features/project/domain/entities/project.dart';
 import 'package:task_manager/features/task/data/models/task_model.dart';
@@ -23,10 +22,12 @@ class ProjectModel extends Project {
       description: json['description'],
       isArchived: json['isArchived'],
       owner: MemberModel.fromJson(json['owner']),
-      members: (json['members'] as List)
-          .map((e) => MemberModel.fromJson(e))
-          .toList(),
-      tasks: (json['tasks'] as List?)
+      members:
+          (json['members'] as List)
+              .map((e) => MemberModel.fromJson(e))
+              .toList(),
+      tasks:
+          (json['tasks'] as List?)
               ?.map((e) => TaskModel.fromJson(e))
               .toList() ??
           [],

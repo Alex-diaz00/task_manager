@@ -71,8 +71,8 @@ class HomePage extends StatelessWidget {
                 child: const Text('Cancel'),
               ),
               TextButton(
-                onPressed: ()  {
-                  Get.back();    
+                onPressed: () {
+                  Get.back();
                 },
                 child: const Text(
                   'Logout',
@@ -101,7 +101,7 @@ class ProjectsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.find<ProjectController>();
     final authController = Get.find<AuthController>();
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (controller.projects.isEmpty) {
         controller.loadProjects();
@@ -114,24 +114,24 @@ class ProjectsSection extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Obx(() {
-              
               return Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   FilterChip(
-                  label: const Text('My Projects'),
-                  selected: controller.showOnlyMyProjects.value,
-                  onSelected: (_) => controller.toggleMyProjectsFilter(),
-                ),
-                ]
+                    label: const Text('My Projects'),
+                    selected: controller.showOnlyMyProjects.value,
+                    onSelected: (_) => controller.toggleMyProjectsFilter(),
+                  ),
+                ],
               );
             }),
           ),
           Expanded(
             child: NotificationListener<ScrollNotification>(
               onNotification: (notification) {
-                if (notification is ScrollEndNotification && 
-                    notification.metrics.pixels == notification.metrics.maxScrollExtent) {
+                if (notification is ScrollEndNotification &&
+                    notification.metrics.pixels ==
+                        notification.metrics.maxScrollExtent) {
                   controller.loadMoreProjects();
                 }
                 return false;
@@ -143,18 +143,25 @@ class ProjectsSection extends StatelessWidget {
                 return Stack(
                   children: [
                     ListView.builder(
-                      itemCount: controller.projects.length + (controller.hasMore.value ? 1 : 0),
+                      itemCount:
+                          controller.projects.length +
+                          (controller.hasMore.value ? 1 : 0),
                       itemBuilder: (context, index) {
                         if (index >= controller.projects.length) {
                           return const SizedBox.shrink();
                         }
                         final project = controller.projects[index];
-                        final isOwner = authController.currentUser.value != null && 
-                            (project.owner.id.toString() == authController.currentUser.value!.id);
+                        final isOwner =
+                            authController.currentUser.value != null &&
+                            (project.owner.id.toString() ==
+                                authController.currentUser.value!.id);
 
                         return ProjectCard(
                           project: project,
-                          onTap: () => Get.to(() => ProjectDetailPage(project: project)),
+                          onTap:
+                              () => Get.to(
+                                () => ProjectDetailPage(project: project),
+                              ),
                           showActions: true,
                           isOwner: isOwner,
                         );
@@ -170,7 +177,7 @@ class ProjectsSection extends StatelessWidget {
                           child: Column(
                             children: [
                               const Center(child: CircularProgressIndicator()),
-                              SizedBox(height: 8,),
+                              SizedBox(height: 8),
                               Text(
                                 "Loading more projects...",
                                 style: Theme.of(context).textTheme.bodySmall,
@@ -195,66 +202,66 @@ class ProjectsSection extends StatelessWidget {
 }
 
 void _showCreateProjectDialog(BuildContext context) {
-    final controller = Get.find<ProjectController>();
-    final nameController = TextEditingController();
-    final descriptionController = TextEditingController();
+  final controller = Get.find<ProjectController>();
+  final nameController = TextEditingController();
+  final descriptionController = TextEditingController();
 
-    controller.loadAvailableMembers();
-    showDialog(
-      context: context,
-      builder:
-          (context) {
-            return AlertDialog(
-              title: const Text('Create New Project'),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Project Name',
-                      ),
-                    ),
-                    TextField(
-                      controller: descriptionController,
-                      decoration: const InputDecoration(
-                        labelText: 'Description',
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Obx(() => _buildMemberSelectionSection(controller)),
-                  ],
-                ),
+  controller.loadAvailableMembers();
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Create New Project'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: 'Project Name'),
               ),
-              actions: [
-                TextButton(onPressed: Get.back, child: const Text('Cancel')),
-                TextButton(
-                  onPressed: () {
-                    controller.createProject(
-                      nameController.text.trim(),
-                      descriptionController.text.trim(),
-                    );
-                    Get.back();
-                  },
-                  child: const Text('Create'),
-                ),
-              ],
-            );
-          },
-    );
-  }
+              TextField(
+                controller: descriptionController,
+                decoration: const InputDecoration(labelText: 'Description'),
+              ),
+              const SizedBox(height: 16),
+              Obx(() => _buildMemberSelectionSection(controller)),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: Get.back, child: const Text('Cancel')),
+          TextButton(
+            onPressed: () {
+              controller.createProject(
+                nameController.text.trim(),
+                descriptionController.text.trim(),
+              );
+              Get.back();
+            },
+            child: const Text('Create'),
+          ),
+        ],
+      );
+    },
+  );
+}
 
-  Widget _buildMemberSelectionSection(ProjectController controller) {
+Widget _buildMemberSelectionSection(ProjectController controller) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      const Text('Team Members:', style: TextStyle(fontWeight: FontWeight.bold)),
+      const Text(
+        'Team Members:',
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
       if (controller.isLoadingMembers.value)
         const Center(child: CircularProgressIndicator())
       else if (controller.membersErrorMessage.isNotEmpty)
-        Text(controller.membersErrorMessage.value, 
-             style: const TextStyle(color: Colors.red))
+        Text(
+          controller.membersErrorMessage.value,
+          style: const TextStyle(color: Colors.red),
+        )
       else ...[
         TextField(
           decoration: const InputDecoration(
@@ -265,9 +272,7 @@ void _showCreateProjectDialog(BuildContext context) {
         ),
         const SizedBox(height: 8),
         ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxHeight: 200,
-          ),
+          constraints: const BoxConstraints(maxHeight: 200),
           child: _buildMembersList(controller),
         ),
       ],
@@ -279,18 +284,18 @@ Widget _buildMembersList(ProjectController controller) {
   return SingleChildScrollView(
     child: Column(
       mainAxisSize: MainAxisSize.min,
-      children: controller.filteredMembers.map((member) {
-        return CheckboxListTile(
-          title: Text(member.name),
-          subtitle: Text(member.email),
-          value: controller.selectedMemberIds.contains(member.id),
-          onChanged: (_) => controller.toggleMemberSelection(member.id),
-        );
-      }).toList(),
+      children:
+          controller.filteredMembers.map((member) {
+            return CheckboxListTile(
+              title: Text(member.name),
+              subtitle: Text(member.email),
+              value: controller.selectedMemberIds.contains(member.id),
+              onChanged: (_) => controller.toggleMemberSelection(member.id),
+            );
+          }).toList(),
     ),
   );
 }
-
 
 class ProfileSection extends StatelessWidget {
   const ProfileSection({super.key});

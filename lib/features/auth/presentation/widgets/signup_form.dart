@@ -4,12 +4,12 @@ import 'package:task_manager/core/util/constants.dart';
 import 'package:task_manager/core/util/validators/form_validator.dart';
 import 'package:task_manager/features/auth/presentation/controllers/auth_controller.dart';
 
-
 class SignupForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final AuthController controller;
 
-  const SignupForm({super.key, 
+  const SignupForm({
+    super.key,
     required this.formKey,
     required this.controller,
   });
@@ -28,16 +28,14 @@ class SignupForm extends StatelessWidget {
               hintText: "Full Name",
               prefixIcon: Padding(
                 padding: const EdgeInsets.symmetric(
-                    vertical: AppConstants.defaultPadding * 0.75),
+                  vertical: AppConstants.defaultPadding * 0.75,
+                ),
                 child: SvgPicture.asset(
                   "assets/icons/Profile.svg",
                   height: 24,
                   width: 24,
                   colorFilter: ColorFilter.mode(
-                    Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .color!,
+                    Theme.of(context).textTheme.bodyLarge!.color!,
                     BlendMode.srcIn,
                   ),
                 ),
@@ -54,16 +52,14 @@ class SignupForm extends StatelessWidget {
               hintText: "Email address",
               prefixIcon: Padding(
                 padding: const EdgeInsets.symmetric(
-                    vertical: AppConstants.defaultPadding * 0.75),
+                  vertical: AppConstants.defaultPadding * 0.75,
+                ),
                 child: SvgPicture.asset(
                   "assets/icons/Message.svg",
                   height: 24,
                   width: 24,
                   colorFilter: ColorFilter.mode(
-                    Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .color!,
+                    Theme.of(context).textTheme.bodyLarge!.color!,
                     BlendMode.srcIn,
                   ),
                 ),
@@ -79,16 +75,14 @@ class SignupForm extends StatelessWidget {
               hintText: "Password",
               prefixIcon: Padding(
                 padding: const EdgeInsets.symmetric(
-                    vertical: AppConstants.defaultPadding * 0.75),
+                  vertical: AppConstants.defaultPadding * 0.75,
+                ),
                 child: SvgPicture.asset(
                   "assets/icons/Lock.svg",
                   height: 24,
                   width: 24,
                   colorFilter: ColorFilter.mode(
-                    Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .color!,
+                    Theme.of(context).textTheme.bodyLarge!.color!,
                     BlendMode.srcIn,
                   ),
                 ),

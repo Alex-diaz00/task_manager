@@ -9,6 +9,8 @@ class AuthMiddleware extends GetMiddleware {
 
   @override
   RouteSettings? redirect(String? route) {
-    return storage.hasData('access_token') ? null : RouteSettings(name: '/login');
+    return storage.hasData('access_token')
+        ? null
+        : RouteSettings(name: '/login');
   }
 }

@@ -10,14 +10,10 @@ class DioClient {
   DioClient({required this.dio, required this.storage}) {
     dio
       ..options.baseUrl = dotenv.get('API_BASE_URL')
-      
       ..options.connectTimeout = const Duration(seconds: 15)
       ..options.receiveTimeout = const Duration(seconds: 15)
       ..interceptors.add(JwtInterceptor(storage))
-      ..interceptors.add(LogInterceptor(
-        requestBody: true,
-        responseBody: true,
-      ))
+      ..interceptors.add(LogInterceptor(requestBody: true, responseBody: true))
       ..options.validateStatus = (status) => status! < 500;
   }
 }

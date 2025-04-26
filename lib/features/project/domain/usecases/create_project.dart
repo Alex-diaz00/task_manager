@@ -1,5 +1,3 @@
-
-
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:task_manager/core/error/failures.dart';
@@ -14,7 +12,11 @@ class CreateProjectUseCase implements UseCase<Project, CreateProjectParams> {
 
   @override
   Future<Either<Failure, Project>> call(CreateProjectParams params) {
-    return repository.createProject(params.name, params.description, params.members);
+    return repository.createProject(
+      params.name,
+      params.description,
+      params.members,
+    );
   }
 }
 

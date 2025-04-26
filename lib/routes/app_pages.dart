@@ -17,8 +17,7 @@ abstract class AppPages {
     GetPage(name: '/home', page: () => HomePage(), binding: HomeBinding()),
     GetPage(
       name: '/projects/:id',
-      page:
-          () => ProjectDetailPage(project: Get.arguments as Project),
+      page: () => ProjectDetailPage(project: Get.arguments as Project),
       binding: ProjectBinding(),
     ),
     GetPage(

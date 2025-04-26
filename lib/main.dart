@@ -24,19 +24,18 @@ void main() async {
 }
 
 void configureDependencies() {
-
   Get.lazyPut(() => Dio());
   Get.lazyPut(() => GetStorage());
   Get.lazyPut(() => const FlutterSecureStorage());
   Get.lazyPut(() => InternetConnectionChecker.createInstance());
-  
+
   Get.lazyPut(() => DioClient(dio: Get.find(), storage: Get.find()));
   Get.lazyPut<NetworkInfo>(() => NetworkInfoImpl(Get.find()));
-  
+
   Get.lazyPut<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(dioClient: Get.find()),
   );
-  
+
   Get.lazyPut<AuthRepository>(
     () => AuthRepositoryImpl(
       remoteDataSource: Get.find(),
@@ -44,19 +43,18 @@ void configureDependencies() {
       secureStorage: Get.find(),
     ),
   );
-  
+
   Get.lazyPut(() => SignInUseCase(Get.find()));
   Get.lazyPut(() => SignUpUseCase(Get.find()));
-  
-  Get.lazyPut(() => AuthController(
-    signInUseCase: Get.find(),
-    signUpUseCase: Get.find(),
-    getCurrentUserUseCase: Get.find(),
-    secureStorage: Get.find(),
-  ));
 
-  
-  
+  Get.lazyPut(
+    () => AuthController(
+      signInUseCase: Get.find(),
+      signUpUseCase: Get.find(),
+      getCurrentUserUseCase: Get.find(),
+      secureStorage: Get.find(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

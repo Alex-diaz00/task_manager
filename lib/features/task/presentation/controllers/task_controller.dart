@@ -1,6 +1,3 @@
-
-
-
 import 'package:get/get.dart';
 import 'package:task_manager/features/task/domain/entities/task.dart';
 import 'package:task_manager/features/task/domain/usecases/create_task.dart';
@@ -59,48 +56,46 @@ class TaskController extends GetxController {
     loadMore ? isLoadingMore.value = false : isLoading.value = false;
   }
 
-
   Future<void> createTask(CreateTaskParams task) async {
-  isLoading.value = true;
+    isLoading.value = true;
 
-  try {
-    final result = await createTaskUseCase(task);
+    try {
+      final result = await createTaskUseCase(task);
 
-    result.fold(
-      (failure) {
-        errorMessage.value = failure.message;
-        Get.back();
-        Get.snackbar(
-          'Error', 
-          failure.message,
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 5),
-        );
-      },
-      (createdTask) {
-        tasks.insert(0, createdTask);
-        Get.snackbar(
-          'Success', 
-          'Task created successfully',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 2),
-        );
-      },
-    );
-  } catch (e) {
-    Get.back();
-    errorMessage.value = 'Unexpected error occurred';
-    Get.snackbar(
-      'Error', 
-      'Unexpected error occurred',
-      snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 5),
-    );
-
-  } finally {
-    isLoading.value = false;
+      result.fold(
+        (failure) {
+          errorMessage.value = failure.message;
+          Get.back();
+          Get.snackbar(
+            'Error',
+            failure.message,
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 5),
+          );
+        },
+        (createdTask) {
+          tasks.insert(0, createdTask);
+          Get.snackbar(
+            'Success',
+            'Task created successfully',
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 2),
+          );
+        },
+      );
+    } catch (e) {
+      Get.back();
+      errorMessage.value = 'Unexpected error occurred';
+      Get.snackbar(
+        'Error',
+        'Unexpected error occurred',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 5),
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
-}
 
   Future<void> loadMoreProjectTasks(int projectId) async {
     if (hasMore.value && !isLoadingMore.value) {
@@ -113,39 +108,40 @@ class TaskController extends GetxController {
     isLoading.value = true;
 
     final taskResult = await getTaskUseCase(taskId);
-    
+
     await taskResult.fold(
       (failure) {
         errorMessage.value = failure.message;
         Get.snackbar('Error', failure.message);
       },
       (task) async {
-        final updateResult = await updateTaskUseCase(UpdateTaskParams(
-          taskId: taskId,
-          name: task.name,
-          priority: task.priority,
-          assigneeIds: task.assignees.map((a) => a.id).toList(),
-          status: newStatus,
-        ));
-        updateResult.fold(
-          (failure) => errorMessage.value = failure.message,
-          (updatedTask) {
-            final index = tasks.indexWhere((t) => t.id == updatedTask.id);
-            if (index != -1) {
-              tasks[index] = updatedTask;
-            }
-          },
+        final updateResult = await updateTaskUseCase(
+          UpdateTaskParams(
+            taskId: taskId,
+            name: task.name,
+            priority: task.priority,
+            assigneeIds: task.assignees.map((a) => a.id).toList(),
+            status: newStatus,
+          ),
         );
+        updateResult.fold((failure) => errorMessage.value = failure.message, (
+          updatedTask,
+        ) {
+          final index = tasks.indexWhere((t) => t.id == updatedTask.id);
+          if (index != -1) {
+            tasks[index] = updatedTask;
+          }
+        });
       },
     );
-    
+
     isLoading.value = false;
   }
 
   Future<void> deleteTask(int taskId) async {
     isLoading.value = true;
     final result = await deleteTaskUseCase(taskId);
-    
+
     result.fold(
       (failure) {
         errorMessage.value = failure.message;
@@ -170,50 +166,46 @@ class TaskController extends GetxController {
     isLoading.value = false;
   }
 
-
   Future<void> updateTask(UpdateTaskParams params) async {
-  isLoading.value = true;
+    isLoading.value = true;
 
-  try {
-    final result = await updateTaskUseCase(params);
+    try {
+      final result = await updateTaskUseCase(params);
 
-    result.fold(
-      (failure) {
-        errorMessage.value = failure.message;
-        Get.back();
-        Get.snackbar(
-          'Error',
-          failure.message,
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 5),
-        );
-      },
-      (updatedTask) {
-
-        final index = tasks.indexWhere((t) => t.id == updatedTask.id);
-        if (index != -1) {
-          tasks[index] = updatedTask;
+      result.fold(
+        (failure) {
+          errorMessage.value = failure.message;
+          Get.back();
           Get.snackbar(
-            'Successd',
-            'Task updated successfully',
+            'Error',
+            failure.message,
             snackPosition: SnackPosition.BOTTOM,
-            duration: const Duration(seconds: 2),
+            duration: const Duration(seconds: 5),
           );
-        }
-      },
-    );
-  } catch (e) {
-    errorMessage.value = 'Unexpected error occurred';
-    Get.snackbar(
-      'Error',
-      'Unexpected error occurred',
-      snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 5),
-    );
-  } finally {
-    isLoading.value = false;
+        },
+        (updatedTask) {
+          final index = tasks.indexWhere((t) => t.id == updatedTask.id);
+          if (index != -1) {
+            tasks[index] = updatedTask;
+            Get.snackbar(
+              'Successd',
+              'Task updated successfully',
+              snackPosition: SnackPosition.BOTTOM,
+              duration: const Duration(seconds: 2),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      errorMessage.value = 'Unexpected error occurred';
+      Get.snackbar(
+        'Error',
+        'Unexpected error occurred',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 5),
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
-}
-
-
 }

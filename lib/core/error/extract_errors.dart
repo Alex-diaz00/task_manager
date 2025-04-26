@@ -7,9 +7,9 @@ class ErrorHelpers {
     if (responseData == null) return null;
     if (responseData is String) return responseData;
     if (responseData is Map) {
-      return responseData['message']?.toString() ?? 
-             responseData['error']?.toString() ??
-             responseData['detail']?.toString();
+      return responseData['message']?.toString() ??
+          responseData['error']?.toString() ??
+          responseData['detail']?.toString();
     }
     return responseData.toString();
   }
@@ -31,7 +31,7 @@ class ErrorHelpers {
       if (statusCode == 500) {
         return errorMessage ?? 'Internal server error';
       }
-      
+
       return errorMessage ?? 'Server error (status $statusCode)';
     }
 
@@ -49,7 +49,7 @@ class ErrorHelpers {
 
   static void handleAuthError(Failure failure) {
     String message;
-    
+
     if (failure is UnauthorizedFailure) {
       message = 'Session expired. Please login again';
     } else if (failure is NetworkFailure) {
@@ -57,7 +57,7 @@ class ErrorHelpers {
     } else {
       message = failure.message;
     }
-    
+
     Get.snackbar('Error', message);
   }
 }

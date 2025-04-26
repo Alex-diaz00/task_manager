@@ -1,5 +1,3 @@
-
-
 import 'package:task_manager/core/network/dio_client.dart';
 import 'package:task_manager/core/util/pagination.dart';
 import 'package:task_manager/features/task/data/datasources/task_remote_data_source.dart';
@@ -54,12 +52,14 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
   }
 
   @override
-  Future<PaginatedResponse<TaskModel>> getProjectTasks(int projectId, int page) async {
+  Future<PaginatedResponse<TaskModel>> getProjectTasks(
+    int projectId,
+    int page,
+  ) async {
     final response = await dioClient.dio.get(
       '/project/$projectId/tasks',
       queryParameters: {'page': page},
     );
     return TaskResponseModel.fromJson(response.data);
   }
-
 }

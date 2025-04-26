@@ -7,11 +7,7 @@ class ProjectForm extends StatefulWidget {
   final Project? project;
   final Function(Project) onSubmit;
 
-  const ProjectForm({
-    super.key,
-    this.project,
-    required this.onSubmit,
-  });
+  const ProjectForm({super.key, this.project, required this.onSubmit});
 
   @override
   State<ProjectForm> createState() => _ProjectFormState();
@@ -27,7 +23,9 @@ class _ProjectFormState extends State<ProjectForm> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.project?.name ?? '');
-    _descController = TextEditingController(text: widget.project?.description ?? '');
+    _descController = TextEditingController(
+      text: widget.project?.description ?? '',
+    );
     _isArchived = widget.project?.isArchived ?? false;
   }
 
@@ -54,7 +52,8 @@ class _ProjectFormState extends State<ProjectForm> {
             CheckboxListTile(
               title: const Text('Archived'),
               value: _isArchived,
-              onChanged: (value) => setState(() => _isArchived = value ?? false),
+              onChanged:
+                  (value) => setState(() => _isArchived = value ?? false),
             ),
           ],
           const SizedBox(height: 12),
@@ -78,11 +77,13 @@ class _ProjectFormState extends State<ProjectForm> {
       final project = Project(
         id: widget.project?.id ?? 0,
         name: _nameController.text.trim(),
-        description: _descController.text.trim().isEmpty 
-          ? null 
-          : _descController.text.trim(),
+        description:
+            _descController.text.trim().isEmpty
+                ? null
+                : _descController.text.trim(),
         isArchived: _isArchived,
-        owner: widget.project?.owner ?? const Member(id: 0, name: '', email: ''),
+        owner:
+            widget.project?.owner ?? const Member(id: 0, name: '', email: ''),
         members: widget.project?.members ?? const [],
       );
       widget.onSubmit(project);

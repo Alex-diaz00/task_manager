@@ -1,4 +1,3 @@
-
 import 'package:get/get.dart';
 import 'package:task_manager/core/error/failures.dart';
 import 'package:task_manager/core/usecases/usecase.dart';
@@ -29,12 +28,11 @@ class ProjectController extends GetxController {
   final hasMore = true.obs;
   final showOnlyMyProjects = false.obs;
   final isFilterLoading = false.obs;
-  
+
   final RxList<Member> availableMembers = <Member>[].obs;
   final RxList<int> selectedMemberIds = <int>[].obs;
   final RxBool isLoadingMembers = false.obs;
   final RxString membersErrorMessage = RxString('');
-  
 
   ProjectController({
     required this.getProjectsUseCase,
@@ -60,14 +58,15 @@ class ProjectController extends GetxController {
 
   Future<void> loadProjects({bool loadMore = false}) async {
     if (isLoading.value || (loadMore && isLoadingMore.value)) return;
-    
+
     loadMore ? isLoadingMore.value = true : isLoading.value = true;
     if (!loadMore) isFilterLoading.value = true;
-    
-    final result = showOnlyMyProjects.value
-        ? await getMyProjectsUseCase(currentPage.value)
-        : await getProjectsUseCase(currentPage.value);
-    
+
+    final result =
+        showOnlyMyProjects.value
+            ? await getMyProjectsUseCase(currentPage.value)
+            : await getProjectsUseCase(currentPage.value);
+
     result.fold(
       (failure) {
         errorMessage.value = failure.message;
@@ -83,7 +82,7 @@ class ProjectController extends GetxController {
         hasMore.value = response.links.next != null;
       },
     );
-    
+
     loadMore ? isLoadingMore.value = false : isLoading.value = false;
     isFilterLoading.value = false;
   }
@@ -95,85 +94,85 @@ class ProjectController extends GetxController {
     }
   }
 
-
   Future<void> createProject(String name, String? description) async {
     isLoading.value = true;
-    final result = await createProjectUseCase(CreateProjectParams(
-      name: name,
-      description: description,
-      members: selectedMemberIds.toList(),
-    ));
-    
-    result.fold(
-      (failure) => errorMessage.value = failure.message,
-      (project) {
-        projects.insert(0, project);
-        selectedMemberIds.clear();
-      },
+    final result = await createProjectUseCase(
+      CreateProjectParams(
+        name: name,
+        description: description,
+        members: selectedMemberIds.toList(),
+      ),
     );
+
+    result.fold((failure) => errorMessage.value = failure.message, (project) {
+      projects.insert(0, project);
+      selectedMemberIds.clear();
+    });
     isLoading.value = false;
   }
 
   Future<void> updateProject(Project project) async {
     isLoading.value = true;
-    final result = await updateProjectUseCase(UpdateProjectParams(
-      id: project.id,
-      name: project.name,
-      description: project.description,
-      isArchived: project.isArchived,
-    ));
-    
-    result.fold(
-      (failure) => errorMessage.value = failure.message,
-      (updatedProject) {
-        final index = projects.indexWhere((p) => p.id == updatedProject.id);
-        if (index != -1) {
-          projects[index] = updatedProject;
-        }
-        Get.snackbar(
+    final result = await updateProjectUseCase(
+      UpdateProjectParams(
+        id: project.id,
+        name: project.name,
+        description: project.description,
+        isArchived: project.isArchived,
+      ),
+    );
+
+    result.fold((failure) => errorMessage.value = failure.message, (
+      updatedProject,
+    ) {
+      final index = projects.indexWhere((p) => p.id == updatedProject.id);
+      if (index != -1) {
+        projects[index] = updatedProject;
+      }
+      Get.snackbar(
         'Success',
         'Project updated successfully',
         snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 5));
-      },
-    );
+        duration: const Duration(seconds: 5),
+      );
+    });
     isLoading.value = false;
   }
 
   Future<void> deleteProject(int projectId) async {
     isLoading.value = true;
     final result = await deleteProjectUseCase(projectId);
-    
+
     result.fold(
-    (failure) {
-      errorMessage.value = failure.message;
-      Get.snackbar(
-        'Error',
-        failure.message,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 5));
-      loadProjects();
-    },
-    (_) {
-      projects.removeWhere((p) => p.id == projectId);
-      Get.snackbar(
-        'Success',
-        'Project deleted successfully',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 5));
-      
-    },
-  );
+      (failure) {
+        errorMessage.value = failure.message;
+        Get.snackbar(
+          'Error',
+          failure.message,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 5),
+        );
+        loadProjects();
+      },
+      (_) {
+        projects.removeWhere((p) => p.id == projectId);
+        Get.snackbar(
+          'Success',
+          'Project deleted successfully',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 5),
+        );
+      },
+    );
     isLoading.value = false;
   }
-
 
   Future<void> loadAvailableMembers() async {
     isLoadingMembers.value = true;
     membersErrorMessage.value = '';
-    
+
     final result = await getAvailableMembersUseCase(NoParams());
-    
+
     result.fold(
       (failure) {
         membersErrorMessage.value = _mapFailureToMessage(failure);
@@ -181,12 +180,10 @@ class ProjectController extends GetxController {
       },
       (members) {
         availableMembers.assignAll(members);
-        selectedMemberIds.retainWhere(
-          (id) => members.any((m) => m.id == id)
-        );
+        selectedMemberIds.retainWhere((id) => members.any((m) => m.id == id));
       },
     );
-    
+
     isLoadingMembers.value = false;
     filterMembers();
   }
@@ -217,57 +214,53 @@ class ProjectController extends GetxController {
   final RxString searchQuery = RxString('');
   final RxList<Member> filteredMembers = <Member>[].obs;
 
-
   void filterMembers() {
-  if (searchQuery.isEmpty) {
-    filteredMembers.assignAll(availableMembers);
-  } else {
-    filteredMembers.assignAll(
-      availableMembers.where((member) =>
-        member.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
-        (member.email.toLowerCase().contains(searchQuery.toLowerCase()))
-      ),
-    );
+    if (searchQuery.isEmpty) {
+      filteredMembers.assignAll(availableMembers);
+    } else {
+      filteredMembers.assignAll(
+        availableMembers.where(
+          (member) =>
+              member.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
+              (member.email.toLowerCase().contains(searchQuery.toLowerCase())),
+        ),
+      );
+    }
   }
-}
 
   Future<bool> updateProjectMembers({
-  required int projectId,
-  required List<int> memberIds,
-}) async {
-  try {
-    isLoading.value = true;
-    final result = await updateProjectMembersUseCase(
-      UpdateProjectMembersParams(
-        projectId: projectId,
-        memberIds: memberIds,
-      ),
-    );
+    required int projectId,
+    required List<int> memberIds,
+  }) async {
+    try {
+      isLoading.value = true;
+      final result = await updateProjectMembersUseCase(
+        UpdateProjectMembersParams(projectId: projectId, memberIds: memberIds),
+      );
 
-    return result.fold(
-      (failure) {
-        errorMessage.value = failure.message;
-        Get.snackbar(
-          'Error',
-          failure.message,
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 5),
-        );
-        return false;
-      },
-      (updatedProject) {
-        final index = projects.indexWhere((p) => p.id == projectId);
-        if (index != -1) {
-          final updatedProjects = List<Project>.from(projects);
-          updatedProjects[index] = updatedProject;
-          projects.assignAll(updatedProjects);
-        }
-        return true;
-      },
-    );
-  } finally {
-    isLoading.value = false;
+      return result.fold(
+        (failure) {
+          errorMessage.value = failure.message;
+          Get.snackbar(
+            'Error',
+            failure.message,
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 5),
+          );
+          return false;
+        },
+        (updatedProject) {
+          final index = projects.indexWhere((p) => p.id == projectId);
+          if (index != -1) {
+            final updatedProjects = List<Project>.from(projects);
+            updatedProjects[index] = updatedProject;
+            projects.assignAll(updatedProjects);
+          }
+          return true;
+        },
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
-}
-
 }

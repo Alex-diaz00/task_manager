@@ -32,34 +32,37 @@ class AuthController extends GetxController {
     super.onInit();
     fetchCurrentUser();
   }
-  
+
   Future<void> fetchCurrentUser({bool silent = true}) async {
     try {
       isLoading.value = true;
       final token = await secureStorage.read(key: 'access_token');
-      
+
       if (token == null || token.isEmpty) {
         if (!silent) {
-          Get.snackbar('Error', 'No authentication token found',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 5));
+          Get.snackbar(
+            'Error',
+            'No authentication token found',
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 5),
+          );
         }
         currentUser.value = null;
         return;
       }
-      
+
       final result = await getCurrentUserUseCase(NoParams());
-      result.fold(
-        (failure) {
-          if (!silent) {
-            Get.snackbar('Error', failure.message,
+      result.fold((failure) {
+        if (!silent) {
+          Get.snackbar(
+            'Error',
+            failure.message,
             snackPosition: SnackPosition.BOTTOM,
-            duration: const Duration(seconds: 5));
-          }
-          currentUser.value = null;
-        },
-        (user) => currentUser.value = user,
-      );
+            duration: const Duration(seconds: 5),
+          );
+        }
+        currentUser.value = null;
+      }, (user) => currentUser.value = user);
     } finally {
       isLoading.value = false;
       initialAuthCheckCompleted.value = true;
@@ -67,21 +70,21 @@ class AuthController extends GetxController {
   }
 
   void _handleAuthSuccess(UserEntity user) async {
-  await secureStorage.write(key: 'access_token', value: user.token);
-  await secureStorage.write(
-    key: 'current_user',
-    value: jsonEncode(user.toJson()),
-  );
-  currentUser.value = user;
-  Get.offAllNamed('/home');
-  Get.snackbar(
-    'Welcome!',
-    'You have successfully logged in',
-    snackPosition: SnackPosition.BOTTOM,
-    duration: const Duration(seconds: 3),
-  );
-}
-  
+    await secureStorage.write(key: 'access_token', value: user.token);
+    await secureStorage.write(
+      key: 'current_user',
+      value: jsonEncode(user.toJson()),
+    );
+    currentUser.value = user;
+    Get.offAllNamed('/home');
+    Get.snackbar(
+      'Welcome!',
+      'You have successfully logged in',
+      snackPosition: SnackPosition.BOTTOM,
+      duration: const Duration(seconds: 3),
+    );
+  }
+
   AuthController({
     required this.signInUseCase,
     required this.signUpUseCase,
@@ -89,17 +92,22 @@ class AuthController extends GetxController {
     required this.getCurrentUserUseCase,
   });
 
-   Future<void> signIn() async {
+  Future<void> signIn() async {
     isLoading.value = true;
-    final result = await signInUseCase(SignInParams(
-      email: emailController.text.trim(),
-      password: passwordController.text.trim(),
-    ));
-    
+    final result = await signInUseCase(
+      SignInParams(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      ),
+    );
+
     result.fold(
-      (failure) => Get.snackbar('Error', failure.message,
-      snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 5)),
+      (failure) => Get.snackbar(
+        'Error',
+        failure.message,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 5),
+      ),
       (user) => _handleAuthSuccess(user),
     );
     isLoading.value = false;
@@ -107,21 +115,23 @@ class AuthController extends GetxController {
 
   Future<void> signUp() async {
     isLoading.value = true;
-    final result = await signUpUseCase(SignUpParams(
-      email: emailController.text.trim(),
-      password: passwordController.text.trim(),
-      name: nameController.text.trim(),
-    ));
+    final result = await signUpUseCase(
+      SignUpParams(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+        name: nameController.text.trim(),
+      ),
+    );
 
-    result.fold(
-    (failure) => ErrorHelpers.handleAuthError(failure),
-    (user) {
+    result.fold((failure) => ErrorHelpers.handleAuthError(failure), (user) {
       Get.offAllNamed('/home');
-      Get.snackbar('Success', 'Account created successfully',
-      snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 5));
-    },
-  );
+      Get.snackbar(
+        'Success',
+        'Account created successfully',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 5),
+      );
+    });
     isLoading.value = false;
   }
 
@@ -138,9 +148,8 @@ class AuthController extends GetxController {
   }
 
   void clearFields() {
-  emailController.clear();
-  passwordController.clear();
-  nameController.clear();
-}
-
+    emailController.clear();
+    passwordController.clear();
+    nameController.clear();
+  }
 }

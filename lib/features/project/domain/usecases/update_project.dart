@@ -1,6 +1,3 @@
-
-
-
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:task_manager/core/error/failures.dart';
@@ -15,7 +12,12 @@ class UpdateProjectUseCase implements UseCase<Project, UpdateProjectParams> {
 
   @override
   Future<Either<Failure, Project>> call(UpdateProjectParams params) {
-    return repository.updateProject(params.id, params.name, params.description, params.isArchived );
+    return repository.updateProject(
+      params.id,
+      params.name,
+      params.description,
+      params.isArchived,
+    );
   }
 }
 
@@ -30,7 +32,6 @@ class UpdateProjectParams extends Equatable {
     this.name,
     this.description,
     this.isArchived,
-
   });
 
   @override

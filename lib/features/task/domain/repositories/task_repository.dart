@@ -11,5 +11,7 @@ abstract class TaskRepository {
   Future<dartz.Either<Failure, void>> deleteTask(int taskId);
   Future<dartz.Either<Failure, Task>> getTask(int taskId);
   Future<dartz.Either<Failure, PaginatedResponse<Task>>> getProjectTasks(
-      int projectId, int page);
+    int projectId,
+    int page,
+  );
 }

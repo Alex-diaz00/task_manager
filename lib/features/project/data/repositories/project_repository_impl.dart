@@ -1,5 +1,3 @@
-
-
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:task_manager/core/error/extract_errors.dart';
@@ -28,13 +26,26 @@ class ProjectRepositoryImpl implements ProjectRepository {
   }
 
   @override
-  Future<Either<Failure, Project>> createProject(String name, String? description,List<int> memberIds) async {
-    return _handleRequest(() => remoteDataSource.createProject(name, description, memberIds));
+  Future<Either<Failure, Project>> createProject(
+    String name,
+    String? description,
+    List<int> memberIds,
+  ) async {
+    return _handleRequest(
+      () => remoteDataSource.createProject(name, description, memberIds),
+    );
   }
 
   @override
-  Future<Either<Failure, Project>> updateProject(int id, String? name, String? description, bool? isArchived) async {
-    return _handleRequest(() => remoteDataSource.updateProject(id, name, description, isArchived));
+  Future<Either<Failure, Project>> updateProject(
+    int id,
+    String? name,
+    String? description,
+    bool? isArchived,
+  ) async {
+    return _handleRequest(
+      () => remoteDataSource.updateProject(id, name, description, isArchived),
+    );
   }
 
   @override
@@ -51,27 +62,31 @@ class ProjectRepositoryImpl implements ProjectRepository {
   Future<Either<Failure, ProjectResponse>> getMyProjects(int page) async {
     return _handleRequest(() => remoteDataSource.getMyProjects(page));
   }
-  
-  Future<Either<Failure, T>> _handleRequest<T>(Future<T> Function() request) async {
-  if (!await networkInfo.isConnected) {
-    return Left(NetworkFailure('No internet connection'));
-  }
 
-  try {
-    final response = await request();
-    return Right(response);
-  } on DioException catch (e) {
-    if (e.response?.statusCode == 204) {
-      return Right(null as T);
+  Future<Either<Failure, T>> _handleRequest<T>(
+    Future<T> Function() request,
+  ) async {
+    if (!await networkInfo.isConnected) {
+      return Left(NetworkFailure('No internet connection'));
     }
-    return Left(ServerFailure(ErrorHelpers.handleDioError(e)));
-  } catch (e) {
-    return Left(ServerFailure('An unexpected error occurred'));
-  }
+
+    try {
+      final response = await request();
+      return Right(response);
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 204) {
+        return Right(null as T);
+      }
+      return Left(ServerFailure(ErrorHelpers.handleDioError(e)));
+    } catch (e) {
+      return Left(ServerFailure('An unexpected error occurred'));
+    }
   }
 
   @override
-  Future<Either<Failure, ProjectModel>> updateProjectMembers(UpdateProjectMembersParams params) async {
+  Future<Either<Failure, ProjectModel>> updateProjectMembers(
+    UpdateProjectMembersParams params,
+  ) async {
     return _handleRequest(() => remoteDataSource.updateProjectMembers(params));
   }
 }

@@ -38,10 +38,7 @@ class LoginPage extends StatelessWidget {
                     "Log in with your data that you entered during your registration.",
                   ),
                   const SizedBox(height: AppConstants.defaultPadding),
-                  LoginForm(
-                    formKey: _formKey,
-                    controller: controller,
-                  ),
+                  LoginForm(formKey: _formKey, controller: controller),
                   Align(
                     child: TextButton(
                       child: const Text("Forgot password"),
@@ -51,39 +48,45 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    height: size.height > 700 ? size.height * 0.1 : AppConstants.defaultPadding,
+                    height:
+                        size.height > 700
+                            ? size.height * 0.1
+                            : AppConstants.defaultPadding,
                   ),
-                  Obx(() => controller.isLoading.value
-                      ? Center(child: const CircularProgressIndicator())
-                      : ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              controller.signIn();
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size(double.infinity, 48),
-                          ),
-                          child: const Text("LOG IN"),
-                        )),
+                  Obx(
+                    () =>
+                        controller.isLoading.value
+                            ? Center(child: const CircularProgressIndicator())
+                            : ElevatedButton(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  controller.signIn();
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(double.infinity, 48),
+                              ),
+                              child: const Text("LOG IN"),
+                            ),
+                  ),
                   const SizedBox(height: AppConstants.defaultPadding),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text("Don't have an account?"),
                       TextButton(
-                        onPressed:   () {
+                        onPressed: () {
                           final controller = Get.find<AuthController>();
                           controller.clearFields();
                           Get.toNamed('/signup');
                         },
                         child: const Text("Sign up"),
-                      )
+                      ),
                     ],
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

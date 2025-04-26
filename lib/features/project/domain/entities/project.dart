@@ -27,14 +27,14 @@ class Project extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        description,
-        isArchived,
-        owner,
-        members,
-        tasks,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    name,
+    description,
+    isArchived,
+    owner,
+    members,
+    tasks,
+    createdAt,
+    updatedAt,
+  ];
 }

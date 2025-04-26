@@ -24,9 +24,10 @@ class TaskModel extends Task {
         (e) => e.name == json['priority'],
         orElse: () => TaskPriority.medium,
       ),
-      assignees: (json['assignees'] as List)
-          .map((e) => MemberModel.fromJson(e))
-          .toList(),
+      assignees:
+          (json['assignees'] as List)
+              .map((e) => MemberModel.fromJson(e))
+              .toList(),
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
     );

@@ -19,11 +19,6 @@ class UserModel extends UserEntity {
 
   @override
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'email': email,
-      'name': name,
-      'token': token,
-    };
+    return {'id': id, 'email': email, 'name': name, 'token': token};
   }
 }

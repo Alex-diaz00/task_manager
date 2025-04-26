@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 import 'package:task_manager/core/network/dio_client.dart';
 import 'package:task_manager/features/project/data/datasources/project_remote_data_source.dart';
@@ -14,29 +13,41 @@ class ProjectRemoteDataSourceImpl implements ProjectRemoteDataSource {
 
   @override
   Future<ProjectResponseModel> getProjects(int page) async {
-    final response = await dioClient.dio.get('/project', queryParameters: {
-    'page': page,
-  });
+    final response = await dioClient.dio.get(
+      '/project',
+      queryParameters: {'page': page},
+    );
     return ProjectResponseModel.fromJson(response.data);
   }
 
   @override
-  Future<ProjectModel> createProject(String name, String? description, List<int> memberIds) async {
-    final response = await dioClient.dio.post('/project', data: {
-      'name': name,
-      'description': description,
-      'members': memberIds,
-    });
+  Future<ProjectModel> createProject(
+    String name,
+    String? description,
+    List<int> memberIds,
+  ) async {
+    final response = await dioClient.dio.post(
+      '/project',
+      data: {'name': name, 'description': description, 'members': memberIds},
+    );
     return ProjectModel.fromJson(response.data);
   }
 
   @override
-  Future<ProjectModel> updateProject(int id, String? name, String? description, bool? isArchived) async {
-    final response = await dioClient.dio.put('/project/$id', data: {
-      'name': name,
-      'description': description,
-      'isArchived': isArchived,
-    });
+  Future<ProjectModel> updateProject(
+    int id,
+    String? name,
+    String? description,
+    bool? isArchived,
+  ) async {
+    final response = await dioClient.dio.put(
+      '/project/$id',
+      data: {
+        'name': name,
+        'description': description,
+        'isArchived': isArchived,
+      },
+    );
     return ProjectModel.fromJson(response.data);
   }
 
@@ -56,7 +67,7 @@ class ProjectRemoteDataSourceImpl implements ProjectRemoteDataSource {
   Future<List<MemberModel>> getAvailableMembers() async {
     try {
       final response = await dioClient.dio.get('/profile');
-      
+
       return (response.data as List)
           .map((memberJson) => MemberModel.fromJson(memberJson))
           .toList();
@@ -68,25 +79,23 @@ class ProjectRemoteDataSourceImpl implements ProjectRemoteDataSource {
     }
   }
 
-
   @override
   Future<ProjectResponseModel> getMyProjects(int page) async {
-  final response = await dioClient.dio.get('/project/owner', queryParameters: {
-    'page': page,
-  });
-  return ProjectResponseModel.fromJson(response.data);
-}
+    final response = await dioClient.dio.get(
+      '/project/owner',
+      queryParameters: {'page': page},
+    );
+    return ProjectResponseModel.fromJson(response.data);
+  }
 
   @override
-  Future<ProjectModel> updateProjectMembers(UpdateProjectMembersParams params) async {
-  final response = await dioClient.dio.patch(
-    '/project/${params.projectId}/members',
-    data: {
-      'memberIds': params.memberIds,
-    },
-  );
-  return ProjectModel.fromJson(response.data);
-}
-
-
+  Future<ProjectModel> updateProjectMembers(
+    UpdateProjectMembersParams params,
+  ) async {
+    final response = await dioClient.dio.patch(
+      '/project/${params.projectId}/members',
+      data: {'memberIds': params.memberIds},
+    );
+    return ProjectModel.fromJson(response.data);
+  }
 }

@@ -31,9 +31,5 @@ class PaginationLinks {
   final String? next;
   final String last;
 
-  PaginationLinks({
-    required this.first,
-    this.next,
-    required this.last,
-  });
+  PaginationLinks({required this.first, this.next, required this.last});
 }

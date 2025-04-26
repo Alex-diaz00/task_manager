@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:task_manager/features/project/domain/entities/member.dart';
 
 enum TaskStatus { pending, in_progress, completed }
+
 enum TaskPriority { low, medium, high }
 
 class Task extends Equatable {
@@ -24,5 +25,13 @@ class Task extends Equatable {
   });
 
   @override
-  List<Object> get props => [id, name, status, priority, assignees, createdAt, updatedAt];
+  List<Object> get props => [
+    id,
+    name,
+    status,
+    priority,
+    assignees,
+    createdAt,
+    updatedAt,
+  ];
 }

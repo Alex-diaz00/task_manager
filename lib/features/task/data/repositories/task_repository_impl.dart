@@ -20,12 +20,16 @@ class TaskRepositoryImpl implements TaskRepository {
   });
 
   @override
-  Future<dartz.Either<Failure, Task>> createTask(CreateTaskParams params) async {
+  Future<dartz.Either<Failure, Task>> createTask(
+    CreateTaskParams params,
+  ) async {
     return _handleRequest(() => remoteDataSource.createTask(params));
   }
 
   @override
-  Future<dartz.Either<Failure, Task>> updateTask(UpdateTaskParams params) async {
+  Future<dartz.Either<Failure, Task>> updateTask(
+    UpdateTaskParams params,
+  ) async {
     return _handleRequest(() => remoteDataSource.updateTask(params));
   }
 
@@ -41,11 +45,17 @@ class TaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<dartz.Either<Failure, PaginatedResponse<Task>>> getProjectTasks(
-      int projectId, int page) async {
-    return _handleRequest(() => remoteDataSource.getProjectTasks(projectId, page));
+    int projectId,
+    int page,
+  ) async {
+    return _handleRequest(
+      () => remoteDataSource.getProjectTasks(projectId, page),
+    );
   }
 
-  Future<dartz.Either<Failure, T>> _handleRequest<T>(Future<T> Function() request) async {
+  Future<dartz.Either<Failure, T>> _handleRequest<T>(
+    Future<T> Function() request,
+  ) async {
     if (!await networkInfo.isConnected) {
       return dartz.Left(NetworkFailure('No internet connection'));
     }
