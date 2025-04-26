@@ -28,12 +28,13 @@ class ProjectDetailPage extends StatelessWidget {
               actions: [
                 if (isOwner)
                   IconButton(
-                    icon: const Icon(Icons.edit),
+                    icon: const Icon(Icons.edit, size: 20),
+                    color: Colors.green,
                     onPressed: () => _showEditDialog(context),
                   ),
                 if (isOwner)
                   IconButton(
-                    icon: const Icon(Icons.delete),
+                    icon: const Icon(Icons.delete, size: 20),
                     onPressed: () => _confirmDelete(context),
                     color: Colors.red,
                   ),

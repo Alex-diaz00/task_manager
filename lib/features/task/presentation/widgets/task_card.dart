@@ -51,12 +51,14 @@ class TaskCard extends StatelessWidget {
       children: [
         if (onEdit != null)
           IconButton(
-            icon: const Icon(Icons.edit, color: Colors.blue),
+            icon: const Icon(Icons.edit, size: 20), 
+            color: Colors.green,
             onPressed: onEdit,
           ),
         if (onDelete != null)
           IconButton(
-            icon: const Icon(Icons.delete, color: Colors.red),
+            icon: const Icon(Icons.delete, size: 20),
+            color: Colors.red,
             onPressed: onDelete,
           ),
       ],

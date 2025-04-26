@@ -44,6 +44,15 @@ class ProjectCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        if (project.isArchived)
+                          const Icon(
+                            Icons.archive,
+                            color: Colors.grey,
+                            size: 20,
+                          ),
+                        SizedBox(width: 8),
+                        if (showActions && isOwner)
+                          _buildActionButtons(context),
                       ],
                     ),
                     if (project.description != null) ...[
@@ -65,9 +74,6 @@ class ProjectCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (showActions && isOwner) _buildActionButtons(context),
-              if (project.isArchived)
-                const Icon(Icons.archive, color: Colors.grey, size: 18),
             ],
           ),
         ),
@@ -82,12 +88,14 @@ class ProjectCard extends StatelessWidget {
       children: [
         IconButton(
           icon: const Icon(Icons.edit, size: 20),
+          color: Colors.green,
           onPressed:
               isOwner ? () => _showEditDialog(context, controller) : null,
           tooltip: isOwner ? 'Edit project' : 'Only project owner can edit',
         ),
         IconButton(
-          icon: const Icon(Icons.delete, size: 20, color: Colors.red),
+          icon: const Icon(Icons.delete, size: 20),
+          color: Colors.red,
           onPressed: isOwner ? () => _confirmDelete(context, controller) : null,
           tooltip: isOwner ? 'Delete project' : 'Only project owner can delete',
         ),
