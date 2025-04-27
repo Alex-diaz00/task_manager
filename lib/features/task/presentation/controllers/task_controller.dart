@@ -43,7 +43,9 @@ class TaskController extends GetxController {
     result.fold(
       (failure) {
         errorMessage.value = failure.message;
-        Get.snackbar('Error', failure.message);
+        Get.snackbar('Error', failure.message,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 5),);
       },
       (response) {
         if (loadMore) {
@@ -71,7 +73,9 @@ class TaskController extends GetxController {
     result.fold(
       (failure) {
         errorMessage.value = failure.message;
-        Get.snackbar('Error', failure.message);
+        Get.snackbar('Error', failure.message,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 5),);
       },
       (response) {
         if (loadMore) {
@@ -150,7 +154,9 @@ class TaskController extends GetxController {
     await taskResult.fold(
       (failure) {
         errorMessage.value = failure.message;
-        Get.snackbar('Error', failure.message);
+        Get.snackbar('Error', failure.message,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 5),);
       },
       (task) async {
         final updateResult = await updateTaskUseCase(
@@ -225,7 +231,6 @@ class TaskController extends GetxController {
           final index = tasks.indexWhere((t) => t.id == updatedTask.id);
           if (index != -1) {
             tasks[index] = updatedTask;
-            print('La tarea actualizada ${tasks[index]}');
             Get.snackbar(
               'Successd',
               'Task updated successfully',

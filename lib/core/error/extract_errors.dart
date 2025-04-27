@@ -58,6 +58,8 @@ class ErrorHelpers {
       message = failure.message;
     }
 
-    Get.snackbar('Error', message);
+    Get.snackbar('Error', message,
+    snackPosition: SnackPosition.BOTTOM,
+    duration: const Duration(seconds: 5),);
   }
 }

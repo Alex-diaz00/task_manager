@@ -8,6 +8,7 @@ import 'package:task_manager/features/auth/domain/entities/user_entity.dart';
 import 'package:task_manager/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:task_manager/features/auth/domain/usecases/sign_in_usecase.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:task_manager/features/auth/domain/usecases/sign_out.dart';
 import 'package:task_manager/features/auth/domain/usecases/sign_up_usecase.dart';
 
 class AuthController extends GetxController {
@@ -15,6 +16,7 @@ class AuthController extends GetxController {
   final SignUpUseCase signUpUseCase;
   final FlutterSecureStorage secureStorage;
   final GetCurrentUserUseCase getCurrentUserUseCase;
+  final SignOutUseCase signOutUseCase;
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -90,6 +92,7 @@ class AuthController extends GetxController {
     required this.signUpUseCase,
     required this.secureStorage,
     required this.getCurrentUserUseCase,
+    required this.signOutUseCase,
   });
 
   Future<void> signIn() async {
@@ -114,16 +117,24 @@ class AuthController extends GetxController {
   }
 
   Future<void> signUp() async {
-    isLoading.value = true;
-    final result = await signUpUseCase(
-      SignUpParams(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-        name: nameController.text.trim(),
-      ),
-    );
+  isLoading.value = true;
+  final result = await signUpUseCase(
+    SignUpParams(
+      email: emailController.text.trim(),
+      password: passwordController.text.trim(),
+      name: nameController.text.trim(),
+    ),
+  );
 
-    result.fold((failure) => ErrorHelpers.handleAuthError(failure), (user) {
+  result.fold(
+    (failure) => ErrorHelpers.handleAuthError(failure),
+    (user) async {
+      await secureStorage.write(key: 'access_token', value: user.token);
+      await secureStorage.write(
+        key: 'current_user', 
+        value: jsonEncode(user.toJson())
+      );
+      currentUser.value = user;
       Get.offAllNamed('/home');
       Get.snackbar(
         'Success',
@@ -131,25 +142,49 @@ class AuthController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
         duration: const Duration(seconds: 5),
       );
-    });
-    isLoading.value = false;
-  }
+    }
+  );
+  isLoading.value = false;
+}
 
   void toggleAuthMode() {
     isSignUp.value = !isSignUp.value;
-  }
-
-  @override
-  void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
-    nameController.dispose();
-    super.onClose();
   }
 
   void clearFields() {
     emailController.clear();
     passwordController.clear();
     nameController.clear();
+  }
+
+  void logout() async {
+    try {
+      isLoading.value = true;
+      final result = await signOutUseCase(NoParams());
+
+      result.fold(
+        (failure) => Get.snackbar(
+          'Error',
+          failure.message,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 5),
+        ),
+        (_) async {
+          await secureStorage.delete(key: 'access_token');
+          await secureStorage.delete(key: 'current_user');
+
+          emailController.clear();
+          passwordController.clear();
+          nameController.clear();
+
+          currentUser.value = null;
+          selectedTab.value = 0;
+
+          Get.offAllNamed('/login');
+        },
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

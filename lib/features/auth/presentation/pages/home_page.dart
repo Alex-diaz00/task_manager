@@ -19,53 +19,63 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authController = Get.find<AuthController>();
-    
+
     return Obx(() {
       if (authController.currentUser.value == null) {
         return const Center(child: CircularProgressIndicator());
       }
-    return Scaffold(
-      appBar: AppBar(
-        title: Obx(
-          () => Text(
-            'Welcome ${authController.currentUser.value?.name ?? ''}!',
-            style: const TextStyle(fontSize: 20),
+      return Scaffold(
+        appBar: AppBar(
+          title: Obx(
+            () => Text(
+              'Welcome ${authController.currentUser.value?.name ?? ''}!',
+              style: const TextStyle(fontSize: 20),
+            ),
           ),
-        ),
-        actions: [
-          PopupMenuButton(
-            icon: const Icon(Icons.account_circle),
-            itemBuilder:
-                (context) => [
-                  const PopupMenuItem(value: 'logout', child: Text('Logout')),
-                ],
-            onSelected: (value) {
-              if (value == 'logout') {
-                _confirmLogout(context);
-              }
-            },
-          ),
-        ],
-      ),
-      body: Obx(
-        () => IndexedStack(
-          index: authController.selectedTab.value,
-          children: const [TasksSection(), ProjectsSection(), ProfileSection()],
-        ),
-      ),
-      bottomNavigationBar: Obx(
-        () => BottomNavigationBar(
-          currentIndex: authController.selectedTab.value,
-          onTap: (index) => authController.selectedTab.value = index,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.task), label: 'Tasks'),
-            BottomNavigationBarItem(icon: Icon(Icons.work), label: 'Projects'),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          actions: [      
+            PopupMenuButton(
+              icon: const Icon(Icons.account_circle),
+              itemBuilder:
+                  (context) => [
+                    PopupMenuItem(value: 'logout', child: Text('Logout')),
+                  ],
+              onSelected: (value) {
+                if (value == 'logout') {
+                  _confirmLogout(context);
+                }
+              },
+            )
           ],
         ),
-      ),
-    );
-  });
+        body: Obx(
+          () => IndexedStack(
+            index: authController.selectedTab.value,
+            children: const [
+              TasksSection(),
+              ProjectsSection(),
+              ProfileSection(),
+            ],
+          ),
+        ),
+        bottomNavigationBar: Obx(
+          () => BottomNavigationBar(
+            currentIndex: authController.selectedTab.value,
+            onTap: (index) => authController.selectedTab.value = index,
+            items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.task), label: 'Tasks'),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.work),
+                label: 'Projects',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'Profile',
+              ),
+            ],
+          ),
+        ),
+      );
+    });
   }
 
   void _confirmLogout(BuildContext context) {
@@ -81,8 +91,8 @@ class HomePage extends StatelessWidget {
                 child: const Text('Cancel'),
               ),
               TextButton(
-                onPressed: () {
-                  Get.back();
+                onPressed: () async {
+                  authController.logout();
                 },
                 child: const Text(
                   'Logout',
@@ -100,21 +110,25 @@ class TasksSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TaskController taskController = Get.put(TaskController(
-    createTaskUseCase: Get.find(),
-      updateTaskUseCase: Get.find(),
-      deleteTaskUseCase: Get.find(),
-      getTaskUseCase: Get.find(),
-      getProjectTasksUseCase: Get.find(),
-      getTasksByUserUseCase: Get.find(),
-  ));
+    final TaskController taskController = Get.put(
+      TaskController(
+        createTaskUseCase: Get.find(),
+        updateTaskUseCase: Get.find(),
+        deleteTaskUseCase: Get.find(),
+        getTaskUseCase: Get.find(),
+        getProjectTasksUseCase: Get.find(),
+        getTasksByUserUseCase: Get.find(),
+      ),
+    );
     final authController = Get.find<AuthController>();
 
     void loadTasks() {
       if (authController.currentUser.value != null) {
         taskController.currentPage.value = 1;
         taskController.tasks.clear();
-        taskController.loadTasksByUser(int.parse(authController.currentUser.value!.id));
+        taskController.loadTasksByUser(
+          int.parse(authController.currentUser.value!.id),
+        );
       }
     }
 
@@ -123,81 +137,85 @@ class TasksSection extends StatelessWidget {
     });
 
     return RefreshIndicator(
-        onRefresh: () async {
-          taskController.currentPage.value = 1;
-          if (authController.currentUser.value != null) {
-            await taskController.loadTasksByUser(int.parse(authController.currentUser.value!.id));
-          }
-        },
-        child: Obx(() {
-          if (taskController.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      onRefresh: () async {
+        taskController.currentPage.value = 1;
+        if (authController.currentUser.value != null) {
+          await taskController.loadTasksByUser(
+            int.parse(authController.currentUser.value!.id),
+          );
+        }
+      },
+      child: Obx(() {
+        if (taskController.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          if (taskController.errorMessage.isNotEmpty) {
-            return Center(
-              child: Text(
-                taskController.errorMessage.value,
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
-          }
-
-          if (taskController.tasks.isEmpty) {
-            return const Center(child: Text('You have no tasks yet.'));
-          }
-
-          return NotificationListener<ScrollNotification>(
-            onNotification: (notification) {
-              if (notification is ScrollEndNotification &&
-                  notification.metrics.pixels == 
-                      notification.metrics.maxScrollExtent &&
-                  taskController.hasMore.value &&
-                  !taskController.isLoadingMore.value) {
-                taskController.loadMoreTasksByUser(
-                  int.parse(authController.currentUser.value!.id),
-                );
-              }
-              return false;
-            },
-            child: Stack(
-              children: [
-                ListView.separated(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: taskController.tasks.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final task = taskController.tasks[index];
-                    return TaskCard(
-                      task: task,
-                      onEdit: () => _showEditTaskDialog(context, task),
-                      onDelete: () => _confirmDeleteTask(context, task.id),
-                    );
-                  },
-                ),
-                if (taskController.isLoadingMore.value)
-                  const Positioned(
-                    bottom: 20,
-                    left: 0,
-                    right: 0,
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-              ],
+        if (taskController.errorMessage.isNotEmpty) {
+          return Center(
+            child: Text(
+              taskController.errorMessage.value,
+              style: const TextStyle(color: Colors.red),
             ),
           );
-        }),
+        }
+
+        if (taskController.tasks.isEmpty) {
+          return const Center(child: Text('You have no tasks yet.'));
+        }
+
+        return NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            if (notification is ScrollEndNotification &&
+                notification.metrics.pixels ==
+                    notification.metrics.maxScrollExtent &&
+                taskController.hasMore.value &&
+                !taskController.isLoadingMore.value) {
+              taskController.loadMoreTasksByUser(
+                int.parse(authController.currentUser.value!.id),
+              );
+            }
+            return false;
+          },
+          child: Stack(
+            children: [
+              ListView.separated(
+                padding: const EdgeInsets.all(16),
+                itemCount: taskController.tasks.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  final task = taskController.tasks[index];
+                  return TaskCard(
+                    task: task,
+                    onEdit: () => _showEditTaskDialog(context, task),
+                    onDelete: () => _confirmDeleteTask(context, task.id),
+                  );
+                },
+              ),
+              if (taskController.isLoadingMore.value)
+                const Positioned(
+                  bottom: 20,
+                  left: 0,
+                  right: 0,
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+            ],
+          ),
+        );
+      }),
     );
   }
 
   void _showEditTaskDialog(BuildContext context, Task task) {
-    final TaskController taskController = Get.put(TaskController(
-    createTaskUseCase: Get.find(),
-      updateTaskUseCase: Get.find(),
-      deleteTaskUseCase: Get.find(),
-      getTaskUseCase: Get.find(),
-      getProjectTasksUseCase: Get.find(),
-      getTasksByUserUseCase: Get.find(),
-  ));
+    final TaskController taskController = Get.put(
+      TaskController(
+        createTaskUseCase: Get.find(),
+        updateTaskUseCase: Get.find(),
+        deleteTaskUseCase: Get.find(),
+        getTaskUseCase: Get.find(),
+        getProjectTasksUseCase: Get.find(),
+        getTasksByUserUseCase: Get.find(),
+      ),
+    );
     Get.dialog(
       TaskForm(
         projectMembers: task.assignees,
@@ -212,40 +230,46 @@ class TasksSection extends StatelessWidget {
             snackPosition: SnackPosition.BOTTOM,
             duration: const Duration(seconds: 2),
           );
-        }, 
+        },
         task: task,
       ),
     );
   }
 
   void _confirmDeleteTask(BuildContext context, int taskId) {
-    final TaskController taskController = Get.put(TaskController(
-    createTaskUseCase: Get.find(),
-      updateTaskUseCase: Get.find(),
-      deleteTaskUseCase: Get.find(),
-      getTaskUseCase: Get.find(),
-      getProjectTasksUseCase: Get.find(),
-      getTasksByUserUseCase: Get.find(),
-  ));
+    final TaskController taskController = Get.put(
+      TaskController(
+        createTaskUseCase: Get.find(),
+        updateTaskUseCase: Get.find(),
+        deleteTaskUseCase: Get.find(),
+        getTaskUseCase: Get.find(),
+        getProjectTasksUseCase: Get.find(),
+        getTasksByUserUseCase: Get.find(),
+      ),
+    );
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Task'),
-        content: const Text('Are you sure you want to delete this task?'),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Delete Task'),
+            content: const Text('Are you sure you want to delete this task?'),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Get.back();
+                  await taskController.deleteTask(taskId);
+                },
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () async {
-              Get.back();
-              await taskController.deleteTask(taskId);
-            },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -70,7 +70,9 @@ class ProjectController extends GetxController {
     result.fold(
       (failure) {
         errorMessage.value = failure.message;
-        Get.snackbar('Error', failure.message);
+        Get.snackbar('Error', failure.message,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 5),);
       },
       (response) {
         if (loadMore) {

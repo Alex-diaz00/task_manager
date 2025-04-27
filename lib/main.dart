@@ -11,7 +11,9 @@ import 'package:task_manager/features/auth/data/datasources/auth_remote_data_sou
 import 'package:task_manager/features/auth/data/datasources/auth_remote_data_source_impl.dart';
 import 'package:task_manager/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:task_manager/features/auth/domain/repositories/auth_repository.dart';
+import 'package:task_manager/features/auth/domain/usecases/get_current_user_usecase.dart';
 import 'package:task_manager/features/auth/domain/usecases/sign_in_usecase.dart';
+import 'package:task_manager/features/auth/domain/usecases/sign_out.dart';
 import 'package:task_manager/features/auth/domain/usecases/sign_up_usecase.dart';
 import 'package:task_manager/features/auth/presentation/controllers/auth_controller.dart';
 import 'routes/app_pages.dart';
@@ -46,6 +48,8 @@ void configureDependencies() {
 
   Get.lazyPut(() => SignInUseCase(Get.find()));
   Get.lazyPut(() => SignUpUseCase(Get.find()));
+  Get.lazyPut(() => GetCurrentUserUseCase(Get.find()));
+  Get.lazyPut(() => SignOutUseCase(Get.find()));
 
   Get.lazyPut(
     () => AuthController(
@@ -53,6 +57,7 @@ void configureDependencies() {
       signUpUseCase: Get.find(),
       getCurrentUserUseCase: Get.find(),
       secureStorage: Get.find(),
+      signOutUseCase: Get.find(),
     ),
   );
 }
