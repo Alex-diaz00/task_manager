@@ -47,6 +47,7 @@ class AuthController extends GetxController {
             'No authentication token found',
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.red,
+            colorText: Colors.white,
             duration: const Duration(seconds: 5),
           );
         }
@@ -62,6 +63,7 @@ class AuthController extends GetxController {
             failure.message,
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.red,
+            colorText: Colors.white,
             duration: const Duration(seconds: 5),
           );
         }
@@ -114,6 +116,7 @@ class AuthController extends GetxController {
         failure.message,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
+        colorText: Colors.white,
         duration: const Duration(seconds: 5),
       ),
       (user) => _handleAuthSuccess(user),
@@ -146,6 +149,7 @@ class AuthController extends GetxController {
         'Account created successfully',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
+        colorText: Colors.white,
         duration: const Duration(seconds: 5),
       );
     }
@@ -174,6 +178,7 @@ class AuthController extends GetxController {
           failure.message,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red,
+          colorText: Colors.white,
           duration: const Duration(seconds: 5),
         ),
         (_) async {

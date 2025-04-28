@@ -74,6 +74,7 @@ class ProjectController extends GetxController {
         Get.snackbar('Error', failure.message,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
+        colorText: Colors.white,
         duration: const Duration(seconds: 5),);
       },
       (response) {
@@ -138,6 +139,7 @@ class ProjectController extends GetxController {
         'Project updated successfully',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.green,
+        colorText: Colors.white,
         duration: const Duration(seconds: 5),
       );
     });
@@ -156,6 +158,7 @@ class ProjectController extends GetxController {
           failure.message,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red,
+          colorText: Colors.white,
           duration: const Duration(seconds: 5),
         );
         loadProjects();
@@ -167,6 +170,7 @@ class ProjectController extends GetxController {
           'Project deleted successfully',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green,
+          colorText: Colors.white,
           duration: const Duration(seconds: 5),
         );
       },
@@ -253,6 +257,7 @@ class ProjectController extends GetxController {
             failure.message,
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.red,
+            colorText: Colors.white,
             duration: const Duration(seconds: 5),
           );
           return false;

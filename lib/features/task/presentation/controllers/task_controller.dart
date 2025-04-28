@@ -47,6 +47,7 @@ class TaskController extends GetxController {
         Get.snackbar('Error', failure.message,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
+        colorText: Colors.white,
         duration: const Duration(seconds: 5),);
       },
       (response) {
@@ -78,6 +79,7 @@ class TaskController extends GetxController {
         Get.snackbar('Error', failure.message,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
+        colorText: Colors.white,
         duration: const Duration(seconds: 5),);
       },
       (response) {
@@ -109,6 +111,7 @@ class TaskController extends GetxController {
             failure.message,
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.red,
+            colorText: Colors.white,
             duration: const Duration(seconds: 5),
           );
         },
@@ -119,6 +122,7 @@ class TaskController extends GetxController {
             'Task created successfully',
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.green,
+            colorText: Colors.white,
             duration: const Duration(seconds: 2),
           );
         },
@@ -131,6 +135,7 @@ class TaskController extends GetxController {
         'Unexpected error occurred',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
+        colorText: Colors.white,
         duration: const Duration(seconds: 5),
       );
     } finally {
@@ -163,6 +168,7 @@ class TaskController extends GetxController {
         Get.snackbar('Error', failure.message,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
+        colorText: Colors.white,
         duration: const Duration(seconds: 5),);
       },
       (task) async {
@@ -201,6 +207,7 @@ class TaskController extends GetxController {
           failure.message,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red,
+          colorText: Colors.white,
           duration: const Duration(seconds: 5),
         );
       },
@@ -211,6 +218,7 @@ class TaskController extends GetxController {
           'Task deleted successfully',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green,
+          colorText: Colors.white,
           duration: const Duration(seconds: 5),
         );
       },
@@ -234,6 +242,7 @@ class TaskController extends GetxController {
             failure.message,
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.red,
+            colorText: Colors.white,
             duration: const Duration(seconds: 5),
           );
         },
@@ -246,6 +255,7 @@ class TaskController extends GetxController {
               'Task updated successfully',
               snackPosition: SnackPosition.BOTTOM,
               backgroundColor: Colors.green,
+              colorText: Colors.white,
               duration: const Duration(seconds: 2),
             );
           }
@@ -258,6 +268,7 @@ class TaskController extends GetxController {
         'Unexpected error occurred',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
+        colorText: Colors.white,
         duration: const Duration(seconds: 5),
       );
     } finally {

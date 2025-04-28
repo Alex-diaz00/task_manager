@@ -123,6 +123,7 @@ class _TaskFormState extends State<TaskForm> {
         'You must assign at least one member',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
+        colorText: Colors.white,
         duration: const Duration(seconds: 5),
       );
       return;
@@ -134,6 +135,7 @@ class _TaskFormState extends State<TaskForm> {
         'Task name must be at least 2 characters',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
+        colorText: Colors.white,
         duration: const Duration(seconds: 5),
       );
       return;
@@ -172,6 +174,7 @@ class _TaskFormState extends State<TaskForm> {
         'Failed to create task',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
+        colorText: Colors.white,
         duration: const Duration(seconds: 5),
       );
     } finally {

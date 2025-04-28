@@ -136,141 +136,114 @@ class TasksSection extends StatelessWidget {
       loadTasks();
     });
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        taskController.currentPage.value = 1;
-        if (authController.currentUser.value != null) {
-          await taskController.loadTasksByUser(
-            int.parse(authController.currentUser.value!.id),
-          );
-        }
-      },
-      child: Obx(() {
-        if (taskController.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    return Obx(() {
+      if (taskController.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
 
-        if (taskController.errorMessage.isNotEmpty) {
-          return Center(
-            child: Text(
-              taskController.errorMessage.value,
-              style: const TextStyle(color: Colors.red),
-            ),
-          );
-        }
-
-        if (taskController.tasks.isEmpty) {
-          return const Center(child: Text('You have no tasks yet.'));
-        }
-
-        return NotificationListener<ScrollNotification>(
-          onNotification: (notification) {
-            if (notification is ScrollEndNotification &&
-                notification.metrics.pixels ==
-                    notification.metrics.maxScrollExtent &&
-                taskController.hasMore.value &&
-                !taskController.isLoadingMore.value) {
-              taskController.loadMoreTasksByUser(
-                int.parse(authController.currentUser.value!.id),
-              );
-            }
-            return false;
-          },
-          child: Stack(
-            children: [
-              ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: taskController.tasks.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  final task = taskController.tasks[index];
-                  return TaskCard(
-                    task: task,
-                    onEdit: () => _showEditTaskDialog(context, task),
-                    onDelete: () => _confirmDeleteTask(context, task.id),
-                  );
-                },
-              ),
-              if (taskController.isLoadingMore.value)
-                const Positioned(
-                  bottom: 20,
-                  left: 0,
-                  right: 0,
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-            ],
+      if (taskController.errorMessage.isNotEmpty) {
+        return Center(
+          child: Text(
+            taskController.errorMessage.value,
+            style: const TextStyle(color: Colors.red),
           ),
         );
-      }),
-    );
+      }
+
+      if (taskController.tasks.isEmpty) {
+        return const Center(child: Text('You have no tasks yet.'));
+      }
+
+      return RefreshIndicator(
+        onRefresh: () async {
+          taskController.currentPage.value = 1;
+          if (authController.currentUser.value != null) {
+            await taskController.loadTasksByUser(
+              int.parse(authController.currentUser.value!.id),
+            );
+          }
+        },
+        child: ListView.separated(
+          padding: const EdgeInsets.all(16),
+          itemCount: taskController.tasks.length + (taskController.hasMore.value ? 1 : 0),
+          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          itemBuilder: (context, index) {
+            if (index >= taskController.tasks.length) {
+              if (taskController.hasMore.value) {
+                taskController.loadMoreTasksByUser(
+                  int.parse(authController.currentUser.value!.id),
+                );
+                return const Center(child: CircularProgressIndicator());
+              }
+              return const SizedBox();
+            }
+
+            final task = taskController.tasks[index];
+            final isAssigned = task.assignees.any(
+              (member) =>
+                  member.id.toString() ==
+                  authController.currentUser.value?.id,
+            );
+
+            return TaskCard(
+              task: task,
+              onEdit: isAssigned ? () => _showEditTaskDialog(context, task) : null,
+              onDelete: isAssigned ? () => _confirmDeleteTask(context, task.id) : null,
+            );
+          },
+        ),
+      );
+    });
   }
 
   void _showEditTaskDialog(BuildContext context, Task task) {
-    final TaskController taskController = Get.put(
-      TaskController(
-        createTaskUseCase: Get.find(),
-        updateTaskUseCase: Get.find(),
-        deleteTaskUseCase: Get.find(),
-        getTaskUseCase: Get.find(),
-        getProjectTasksUseCase: Get.find(),
-        getTasksByUserUseCase: Get.find(),
-      ),
-    );
-    Get.dialog(
-      TaskForm(
-        projectMembers: task.assignees,
-        projectId: 1,
-        onSubmit: (params) async {
-          Get.back();
-          Get.back();
-          await taskController.updateTask(params);
-          Get.snackbar(
-            'Success',
-            'Task updated successfully',
-            backgroundColor: Colors.green,
-            snackPosition: SnackPosition.BOTTOM,
-            duration: const Duration(seconds: 2),
-          );
-        },
-        task: task,
-      ),
-    );
+    final TaskController taskController = Get.find();
+    // Get.dialog(
+    //   TaskForm(
+    //     projectMembers: task.assignees,
+    //     projectId: task.projectId,
+    //     onSubmit: (params) async {
+    //       Get.back();
+    //       Get.back();
+    //       await taskController.updateTask(params);
+    //       Get.snackbar(
+    //         'Success',
+    //         'Task updated successfully',
+    //         backgroundColor: Colors.green,
+    //         colorText: Colors.white,
+    //         snackPosition: SnackPosition.BOTTOM,
+    //         duration: const Duration(seconds: 2),
+    //       );
+    //     },
+    //     task: task,
+    //   ),
+    // );
   }
 
   void _confirmDeleteTask(BuildContext context, int taskId) {
-    final TaskController taskController = Get.put(
-      TaskController(
-        createTaskUseCase: Get.find(),
-        updateTaskUseCase: Get.find(),
-        deleteTaskUseCase: Get.find(),
-        getTaskUseCase: Get.find(),
-        getProjectTasksUseCase: Get.find(),
-        getTasksByUserUseCase: Get.find(),
-      ),
-    );
+    final TaskController taskController = Get.find();
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Delete Task'),
-            content: const Text('Are you sure you want to delete this task?'),
-            actions: [
-              TextButton(
-                onPressed: () => Get.back(),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () async {
-                  Get.back();
-                  await taskController.deleteTask(taskId);
-                },
-                child: const Text(
-                  'Delete',
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Task'),
+        content: const Text('Are you sure you want to delete this task?'),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Cancel'),
           ),
+          TextButton(
+            onPressed: () async {
+              Get.back();
+              await taskController.deleteTask(taskId);
+            },
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
