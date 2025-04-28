@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_manager/core/error/failures.dart';
 import 'package:task_manager/core/usecases/usecase.dart';
@@ -72,6 +73,7 @@ class ProjectController extends GetxController {
         errorMessage.value = failure.message;
         Get.snackbar('Error', failure.message,
         snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
         duration: const Duration(seconds: 5),);
       },
       (response) {
@@ -135,6 +137,7 @@ class ProjectController extends GetxController {
         'Success',
         'Project updated successfully',
         snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
         duration: const Duration(seconds: 5),
       );
     });
@@ -152,6 +155,7 @@ class ProjectController extends GetxController {
           'Error',
           failure.message,
           snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
           duration: const Duration(seconds: 5),
         );
         loadProjects();
@@ -162,6 +166,7 @@ class ProjectController extends GetxController {
           'Success',
           'Project deleted successfully',
           snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
           duration: const Duration(seconds: 5),
         );
       },
@@ -247,6 +252,7 @@ class ProjectController extends GetxController {
             'Error',
             failure.message,
             snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
             duration: const Duration(seconds: 5),
           );
           return false;

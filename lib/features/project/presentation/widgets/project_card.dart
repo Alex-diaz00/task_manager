@@ -21,7 +21,9 @@ class ProjectCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      // margin: const EdgeInsets.symmetricx(horizontal: 8, vertical: 4),
       child: InkWell(
         onTap: onTap,
         child: Padding(
@@ -40,7 +42,8 @@ class ProjectCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             project.name,
-                            style: Theme.of(context).textTheme.titleMedium,
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(fontWeight: FontWeight.w200),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -59,17 +62,17 @@ class ProjectCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         project.description!,
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ],
                     const SizedBox(height: 8),
                     Text(
                       'Owner: ${project.owner.name}',
-                      style: Theme.of(context).textTheme.bodySmall,
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     Text(
                       'Members: ${project.members.length}',
-                      style: Theme.of(context).textTheme.bodySmall,
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
                 ),

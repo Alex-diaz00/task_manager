@@ -49,6 +49,7 @@ class TaskListPage extends StatelessWidget {
                             'Success',
                             'Task created successfully',
                             snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.green,
                             duration: const Duration(seconds: 2),
                           );
                         },
@@ -139,6 +140,7 @@ class TaskListPage extends StatelessWidget {
             'Success',
             'Task updated successfully',
             snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           );
         },

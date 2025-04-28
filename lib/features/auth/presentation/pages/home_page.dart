@@ -227,6 +227,7 @@ class TasksSection extends StatelessWidget {
           Get.snackbar(
             'Success',
             'Task updated successfully',
+            backgroundColor: Colors.green,
             snackPosition: SnackPosition.BOTTOM,
             duration: const Duration(seconds: 2),
           );
@@ -322,7 +323,9 @@ class ProjectsSection extends StatelessWidget {
                 }
                 return Stack(
                   children: [
-                    ListView.builder(
+                    ListView.separated(
+                      padding: const EdgeInsets.all(16),
+                      separatorBuilder: (_, __) => const SizedBox(height: 12),
                       itemCount:
                           controller.projects.length +
                           (controller.hasMore.value ? 1 : 0),

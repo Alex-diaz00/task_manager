@@ -71,6 +71,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/login',
       getPages: AppPages.pages,
+      theme: ThemeData(colorSchemeSeed: Colors.greenAccent),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_manager/core/error/failures.dart';
 
@@ -60,6 +61,7 @@ class ErrorHelpers {
 
     Get.snackbar('Error', message,
     snackPosition: SnackPosition.BOTTOM,
+    backgroundColor: Colors.red,
     duration: const Duration(seconds: 5),);
   }
 }

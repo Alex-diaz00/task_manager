@@ -243,6 +243,7 @@ class ProjectDetailPage extends StatelessWidget {
                         'Success',
                         'Members updated successfully',
                         snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.green,
                         duration: const Duration(seconds: 5),
                       );
                     }
