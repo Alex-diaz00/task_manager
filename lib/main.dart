@@ -16,6 +16,7 @@ import 'package:task_manager/features/auth/domain/usecases/sign_in_usecase.dart'
 import 'package:task_manager/features/auth/domain/usecases/sign_out.dart';
 import 'package:task_manager/features/auth/domain/usecases/sign_up_usecase.dart';
 import 'package:task_manager/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:task_manager/core/util/constants.dart';
 import 'routes/app_pages.dart';
 
 void main() async {
@@ -71,7 +72,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/login',
       getPages: AppPages.pages,
-      theme: ThemeData(colorSchemeSeed: Colors.greenAccent),
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppConstants.primaryColor,
+          brightness: Brightness.light,
+        ),
+      ),
     );
   }
 }

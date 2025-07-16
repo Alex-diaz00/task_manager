@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:task_manager/core/util/extensions/status_and_priority_extensions.dart';
 import 'package:task_manager/features/task/domain/entities/task.dart';
+import 'package:task_manager/core/widgets/info_chip.dart';
 
 class TaskCard extends StatelessWidget {
   final Task task;
@@ -51,7 +52,7 @@ class TaskCard extends StatelessWidget {
       children: [
         if (onEdit != null)
           IconButton(
-            icon: const Icon(Icons.edit, size: 20), 
+            icon: const Icon(Icons.edit, size: 20),
             color: Colors.green,
             onPressed: onEdit,
           ),
@@ -68,38 +69,16 @@ class TaskCard extends StatelessWidget {
   Widget _buildStatusAndPriorityAndAssigneesButton(BuildContext context) {
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 8,
+      runSpacing: 4,
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: _getStatusColor(task.status).withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: _getStatusColor(task.status), width: 1.5),
-          ),
-          child: Text(
-            task.status.label.toUpperCase(),
-            style: TextStyle(
-              color: _getStatusColor(task.status),
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-            ),
-          ),
+        InfoChip(
+          label: task.status.label.toUpperCase(),
+          color: _getStatusColor(task.status),
         ),
-        const SizedBox(width: 12),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: _getPriorityColor(task.priority),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            task.priority.label.toUpperCase(),
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-            ),
-          ),
+        InfoChip(
+          label: task.priority.label.toUpperCase(),
+          color: _getPriorityColor(task.priority),
         ),
         _buildAssigneesButton(context),
       ],

@@ -244,7 +244,7 @@ class _TaskFormState extends State<TaskForm> {
                 subtitle: Obx(
                   () => Text('${_selectedMembers.length} selected'),
                 ),
-                trailing: const Icon(Icons.edit, size: 20, color: Colors.green,),
+                trailing: const Icon(Icons.edit, size: 20, color: Colors.green),
                 onTap: _showMembersSelectionDialog,
               ),
             ],
@@ -257,15 +257,9 @@ class _TaskFormState extends State<TaskForm> {
           child: const Text('Cancel'),
         ),
         Obx(
-          () => ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).primaryColor,
-            ),
+          () => TextButton(
             onPressed: _isLoading.value ? null : _submitForm,
-            child: Text(
-              widget.task == null ? 'Create' : 'Update',
-              style: const TextStyle(color: Colors.white),
-            ),
+            child: Text(widget.task == null ? 'Create' : 'Update'),
           ),
         ),
       ],
