@@ -32,7 +32,7 @@ class HomePage extends StatelessWidget {
               style: const TextStyle(fontSize: 20),
             ),
           ),
-          actions: [      
+          actions: [
             PopupMenuButton(
               icon: const Icon(Icons.account_circle),
               itemBuilder:
@@ -44,17 +44,13 @@ class HomePage extends StatelessWidget {
                   _confirmLogout(context);
                 }
               },
-            )
+            ),
           ],
         ),
         body: Obx(
           () => IndexedStack(
             index: authController.selectedTab.value,
-            children: const [
-              TasksSection(),
-              ProjectsSection(),
-              ProfileSection(),
-            ],
+            children: const [TasksSection(), ProjectsSection()],
           ),
         ),
         bottomNavigationBar: Obx(
@@ -66,10 +62,6 @@ class HomePage extends StatelessWidget {
               BottomNavigationBarItem(
                 icon: Icon(Icons.work),
                 label: 'Projects',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'Profile',
               ),
             ],
           ),
@@ -165,7 +157,9 @@ class TasksSection extends StatelessWidget {
         },
         child: ListView.separated(
           padding: const EdgeInsets.all(16),
-          itemCount: taskController.tasks.length + (taskController.hasMore.value ? 1 : 0),
+          itemCount:
+              taskController.tasks.length +
+              (taskController.hasMore.value ? 1 : 0),
           separatorBuilder: (_, __) => const SizedBox(height: 12),
           itemBuilder: (context, index) {
             if (index >= taskController.tasks.length) {
@@ -181,14 +175,17 @@ class TasksSection extends StatelessWidget {
             final task = taskController.tasks[index];
             final isAssigned = task.assignees.any(
               (member) =>
-                  member.id.toString() ==
-                  authController.currentUser.value?.id,
+                  member.id.toString() == authController.currentUser.value?.id,
             );
 
             return TaskCard(
               task: task,
-              onEdit: isAssigned ? () => _showEditTaskDialog(context, task) : null,
-              onDelete: isAssigned ? () => _confirmDeleteTask(context, task.id) : null,
+              onEdit:
+                  isAssigned ? () => _showEditTaskDialog(context, task) : null,
+              onDelete:
+                  isAssigned
+                      ? () => _confirmDeleteTask(context, task.id)
+                      : null,
             );
           },
         ),
@@ -198,52 +195,54 @@ class TasksSection extends StatelessWidget {
 
   void _showEditTaskDialog(BuildContext context, Task task) {
     final TaskController taskController = Get.find();
-    // Get.dialog(
-    //   TaskForm(
-    //     projectMembers: task.assignees,
-    //     projectId: task.projectId,
-    //     onSubmit: (params) async {
-    //       Get.back();
-    //       Get.back();
-    //       await taskController.updateTask(params);
-    //       Get.snackbar(
-    //         'Success',
-    //         'Task updated successfully',
-    //         backgroundColor: Colors.green,
-    //         colorText: Colors.white,
-    //         snackPosition: SnackPosition.BOTTOM,
-    //         duration: const Duration(seconds: 2),
-    //       );
-    //     },
-    //     task: task,
-    //   ),
-    // );
+    Get.dialog(
+      TaskForm(
+        projectMembers: task.assignees,
+        // projectId is not used during update, but the field is required.
+        projectId: 0,
+        onSubmit: (params) async {
+          Get.back();
+          Get.back();
+          await taskController.updateTask(params);
+          Get.snackbar(
+            'Success',
+            'Task updated successfully',
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 2),
+          );
+        },
+        task: task,
+      ),
+    );
   }
 
   void _confirmDeleteTask(BuildContext context, int taskId) {
     final TaskController taskController = Get.find();
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Task'),
-        content: const Text('Are you sure you want to delete this task?'),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Delete Task'),
+            content: const Text('Are you sure you want to delete this task?'),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Get.back();
+                  await taskController.deleteTask(taskId);
+                },
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () async {
-              Get.back();
-              await taskController.deleteTask(taskId);
-            },
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: Colors.red),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
